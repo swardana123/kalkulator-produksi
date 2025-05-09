@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kalkulator Produksi</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(to bottom right, #e3f2fd, #ffffff); margin:0; padding:10px; color:#333; }
+    .header { display:flex; flex-direction:column; gap:10px; align-items:center; margin-bottom:20px; }
+    .header h1 { font-size:1.5rem; text-align:center; }
+    select { padding:8px; font-size:1rem; border-radius:6px; border:1px solid #ccc; }
+    .tab-container { display:flex; margin-bottom:10px; border-radius:8px; overflow:hidden; }
+    .tab { flex:1; padding:10px; background-color:#eee; text-align:center; cursor:pointer; transition:background-color .3s; font-size:.95rem; }
+    .tab.active { background-color:#2196F3; color:white; font-weight:bold; }
+    .content { display:none; background:white; padding:15px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.1); }
+    .content.active { display:block; }
+    input, select, button { width:100%; max-width:400px; padding:10px; margin:8px 0; font-size:1rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
+    button { background-color:#2196F3; color:white; border:none; cursor:pointer; }
+    button:hover { background-color:#1976D2; }
+    .hasil { margin-top:10px; font-weight:bold; color:#2E7D32; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <select id="language" onchange="ubahBahasa()">
+      <option value="id">Bahasa Indonesia</option>
+      <option value="en">English</option>
+      <option value="zh">中文 (Mandarin)</option>
+    </select>
+    <h1 id="judulHalaman">Gabungan Kalkulator Produksi</h1>
+  </div>
+  
+  <div class="tab-container">
+    <div class="tab active" onclick="showTab(0)" id="tab0">Hitung Waktu Produksi</div>
+    <div class="tab" onclick="showTab(1)" id="tab1">Perhitungan Waktu Angkat Finish Good</div>
+    <div class="tab" onclick="showTab(2)" id="tab2">Perhitungan Air Recycle</div>
+    <div class="tab" onclick="showTab(3)" id="tab3">Flowrate Baru</div>
+  </div>
+  
+  <!-- Tab 0 -->
+  <div id="tab-0" class="content active">
+    <h2 id="judul0">Hitung Waktu Produksi</h2>
+    <input id="targetProduksi" type="number"/>
+    <input id="beratBobbin" type="number"/>
+    <input id="jumlahPotongan" type="number"/>
+    <input id="waktuPengangkatan" type="number"/>
+    <input id="tanggalMulai" type="date"/>
+    <input id="jamMulai" type="time"/>
+    <button onclick="hitungWaktuPengangkatan()" id="btnPengangkatan">Hitung Waktu Pengangkatan</button>
+    <div class="hasil" id="hasilPengangkatan">Durasi: </div>
+  </div>
+  
+  <!-- Tab 1 -->
+  <div id="tab-1" class="content">
+    <h2 id="judul1">Perhitungan Waktu Angkat Finish Good</h2>
+    <input id="berat" type="number"/>
+    <select id="bahan" onchange="aturGSMdanPisau()">
+      <option id="optBahan0" value="">Pilih Bahan</option>
+      <option id="optBahan1" value="Bouyan">Bouyan</option>
+      <option id="optBahan2" value="BAT">BAT</option>
+      <option id="optBahan3" value="Highlander">Highlander</option>
+    </select>
+    <input class="hidden" id="gsm" type="number"/>
+    <input class="hidden" id="pisau" type="number"/>
+    <input id="speed" type="number"/>
+    <button onclick="hitung()" id="btnHitung">Hitung Waktu</button>
+    <div class="hasil" id="hasil">Durasi: </div>
+  </div>
+  
+  <!-- Tab 2 -->
+  <div id="tab-2" class="content">
+    <h2 id="judul2">Perhitungan Air Recycle</h2>
+    <input id="jumlahRecycle" type="number"/>
+    <input id="moisture" type="number" step="any"/>
+    <input id="konsentrasi" type="number" step="any"/>
+    <button onclick="hitungAirRecycle()" id="btnAir">Hitung Air Recycle</button>
+    <div class="hasil" id="hasilAirRecycle">Jumlah Air yang Diperlukan: </div>
+  </div>
+  
+  <!-- Tab 3 -->
+  <div id="tab-3" class="content">
+    <h2 id="judul3">Flowrate Baru</h2>
+    <input id="flowAwal" type="number" step="any"/>
+    <input id="kecepatanAwal" type="number" step="any"/>
+    <input id="kecepatanBaru" type="number" step="any"/>
+    <button onclick="hitungFlowrateBaru()" id="btnFlowrate">Hitung Flowrate</button>
+    <div class="hasil" id="hasilFlowrate">Laju Aliran yang Disarankan: </div>
+  </div>
+  
+<script>
+const teks = {
+  id:{
+    judulHalaman:"Gabungan Kalkulator Produksi",
+    tab0:"Hitung Waktu Produksi",tab1:"Perhitungan Waktu Angkat Finish Good",tab2:"Perhitungan Air Recycle",tab3:"Flowrate Baru",
+    judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru",
+    btnPengangkatan:"Hitung Waktu Pengangkatan",hasilPengangkatan:"Durasi: ",alert:"Mohon lengkapi semua data yang diperlukan",
+    btnHitung:"Hitung Waktu",hasil:"Durasi: ",
+    btnAir:"Hitung Air Recycle",hasilAirRecycle:"Jumlah Air yang Diperlukan: ",
+    btnFlowrate:"Hitung Flowrate",hasilFlowrate:"Laju Aliran yang Disarankan: ",
+    placeholders:{
+      targetProduksi:"Target Produksi (default: 1500)",beratBobbin:"Berat Bobbin (default: 15)",
+      jumlahPotongan:"Jumlah Potongan per Bobbin (default: 10)",waktuPengangkatan:"Waktu Pengangkatan (menit)",
+      jamMulai:"Jam Mulai (misal: 10:00)",berat:"Berat Roll (kg), contoh: 16",optBahan0:"Pilih Bahan",
+      speed:"Kecepatan Belting (default: 10.20)",jumlahRecycle:"Jumlah Recycle (contoh:60)",moisture:"Moisture (default:0.93)",
+      konsentrasi:"Konsentrasi (default:0.16)",flowAwal:"Flow rate awal (misal:0)",kecepatanAwal:"Kecepatan belting saat ini",
+      kecepatanBaru:"Kecepatan belting terbaru"
+    }
+  },
+  en:{
+    judulHalaman:"Combined Production Calculator",
+    tab0:"Production Time Calculation",tab1:"Finish Good Lifting Time Calculation",tab2:"Water Recycle Calculation",tab3:"New Flowrate",
+    judul0:"Production Time Calculation",judul1:"Finish Good Lifting Time Calculation",judul2:"Water Recycle Calculation",judul3:"New Flowrate",
+    btnPengangkatan:"Calculate Lifting Time",hasilPengangkatan:"Duration: ",alert:"Please complete all required fields",
+    btnHitung:"Calculate Time",hasil:"Duration: ",
+    btnAir:"Calculate Water Recycle",hasilAirRecycle:"Required Water Amount: ",
+    btnFlowrate:"Calculate Flowrate",hasilFlowrate:"Recommended Flow Rate: ",
+    placeholders:{
+      targetProduksi:"Target Output (default:1500)",beratBobbin:"Bobbin Weight (default:15)",
+      jumlahPotongan:"Cuts per Bobbin (default:10)",waktuPengangkatan:"Lifting Time (minutes)",
+      jamMulai:"Start Time (e.g.,10:00)",berat:"Roll Weight (kg), e.g.:16",optBahan0:"Select Material",
+      speed:"Belt Speed (default:10.20)",jumlahRecycle:"Recycle Amount (e.g.:60)",moisture:"Moisture (default:0.93)",
+      konsentrasi:"Concentration (default:0.16)",flowAwal:"Initial flow rate (e.g.:0)",kecepatanAwal:"Current belt speed (e.g.:11.5)",
+      kecepatanBaru:"New belt speed (e.g.:12)"
+    }
+  },
+  zh:{
+    judulHalaman:"生产计算器合集",
+    tab0:"生产时间计算",tab1:"成品提取时间计算",tab2:"循环水计算",tab3:"最新流速",
+    judul0:"生产时间计算",judul1:"成品提取时间计算",judul2:"循环水计算",judul3:"最新流速",
+    btnPengangkatan:"计算提升时间",hasilPengangkatan:"时长：",alert:"请完整填写所有必要信息",
+    btnHitung:"计算时间",hasil:"时长：",
+    btnAir:"计算循环水",hasilAirRecycle:"所需水量：",
+    btnFlowrate:"计算流速",hasilFlowrate:"建议流速：",
+    placeholders:{
+      targetProduksi:"目标产量（默认：1500）",beratBobbin:"筒重（默认：15）",
+      jumlahPotongan:"每个筒的切割数（默认：10）",waktuPengangkatan:"提升时间（分钟）",
+      jamMulai:"开始时间（例如：10:00）",berat:"卷重（公斤），例如：16",optBahan0:"选择材料",
+      speed:"皮带速度（默认：10.20）",jumlahRecycle:"循环数量（例如：60）",moisture:"水分 (默认：0.93)",
+      konsentrasi:"浓度 (默认：0.16)",flowAwal:"初始流速（例如：0）",kecepatanAwal:"当前皮带速度（例如：11.5）",
+      kecepatanBaru:"最新皮带速度（例如：12）"
+    }
+  }
+};
+
+function ubahBahasa(){
+  const lang=document.getElementById("language").value, t=teks[lang];
+  document.getElementById("judulHalaman").innerText=t.judulHalaman;
+  ["tab0","tab1","tab2","tab3"].forEach((id,i)=>document.getElementById(id).innerText=t["tab"+i]);
+  ["judul0","judul1","judul2","judul3"].forEach((id,i)=>document.getElementById(id).innerText=t["judul"+i]);
+  document.getElementById("btnPengangkatan").innerText=t.btnPengangkatan;
+  document.getElementById("hasilPengangkatan").innerText=t.hasilPengangkatan;
+  document.getElementById("btnHitung").innerText=t.btnHitung;
+  document.getElementById("hasil").innerText=t.hasil;
+  document.getElementById("btnAir").innerText=t.btnAir;
+  document.getElementById("hasilAirRecycle").innerText=t.hasilAirRecycle;
+  document.getElementById("btnFlowrate").innerText=t.btnFlowrate;
+  document.getElementById("hasilFlowrate").innerText=t.hasilFlowrate;
+  // placeholders
+  Object.entries(t.placeholders).forEach(([id,text])=>{
+    const el=document.getElementById(id);
+    if(el.tagName==="INPUT") el.placeholder=text;
+    else el.innerText=text;
+  });
+}
+
+function showTab(index){
+  document.querySelectorAll(".tab").forEach((tab,i)=>tab.classList.toggle("active",i===index));
+  document.querySelectorAll(".content").forEach((c,i)=>c.classList.toggle("active",i===index));
+}
+
+function hitungWaktuPengangkatan(){
+  const lang=document.getElementById("language").value, t=teks[lang];
+  const target=parseFloat(document.getElementById("targetProduksi").value)||1500;
+  const berat=parseFloat(document.getElementById("beratBobbin").value)||15;
+  const pot=parseFloat(document.getElementById("jumlahPotongan").value)||10;
+  const waktu=parseFloat(document.getElementById("waktuPengangkatan").value);
+  const jamMulai=document.getElementById("jamMulai").value;
+  const tgl=document.getElementById("tanggalMulai").value;
+  if(!waktu||!jamMulai||!tgl){alert(t.alert);return;}
+  const durJam=(target/(berat*pot))*(waktu/60);
+  const [y,m,d]=tgl.split("-").map(Number);
+  const [h,min]=jamMulai.split(":").map(Number);
+  const dt=new Date(y,m-1,d,h,min);
+  dt.setMinutes(dt.getMinutes()+Math.round(durJam*60));
+  const dateStr=dt.toLocaleDateString(lang==="zh"?"zh-CN":lang==="en"?"en-US":"id-ID",{year:"numeric",month:"2-digit",day:"2-digit"});
+  const timeStr=dt.toTimeString().slice(0,5);
+  document.getElementById("hasilPengangkatan").innerText=t.hasilPengangkatan+dateStr+" "+timeStr;
+}
+
+function aturGSMdanPisau(){
+  const b=document.getElementById("bahan").value;
+  const gsm=document.getElementById("gsm"), pisau=document.getElementById("pisau");
+  if(b==="Bouyan"){gsm.value=0.22;pisau.value=0.109;}
+  else if(b==="BAT"){gsm.value=0.18;pisau.value=0.138;}
+  else if(b==="Highlander"){gsm.value=0.095;pisau.value=0.2;}
+  else {gsm.value="";pisau.value="";}
+  gsm.classList.remove("hidden");pisau.classList.remove("hidden");
+}
+
+function hitung(){
+  const lang=document.getElementById("language").value, t=teks[lang];
+  const gsm=parseFloat(document.getElementById("gsm").value)||0;
+  const pis=parseFloat(document.getElementById("pisau").value)||0;
+  let speed=parseFloat(document.getElementById("speed").value);
+  if(!speed||speed<=0)speed=10.2;
+  const berat=parseFloat(document.getElementById("berat").value)||0;
+  const dur=berat/(gsm*pis*speed);
+  document.getElementById("hasil").innerText=t.hasil+dur.toFixed(2)+(lang==="zh"?" 秒":lang==="en"?" seconds":" detik");
+}
+
+function hitungAirRecycle(){
+  const lang=document.getElementById("language").value, t=teks[lang];
+  const jr=parseFloat(document.getElementById("jumlahRecycle").value)||0;
+  const mo=parseFloat(document.getElementById("moisture").value)||0.93;
+  const ko=parseFloat(document.getElementById("konsentrasi").value)||0.16;
+  const air=(jr*mo)/ko-jr;
+  document.getElementById("hasilAirRecycle").innerText=t.hasilAirRecycle+air.toFixed(2);
+}
+
+function hitungFlowrateBaru(){
+  const lang=document.getElementById("language").value, t=teks[lang];
+  const fa=parseFloat(document.getElementById("flowAwal").value)||0;
+  const ka=parseFloat(document.getElementById("kecepatanAwal").value)||1;
+  const kb=parseFloat(document.getElementById("kecepatanBaru").value)||1;
+  const fr=fa/ka*kb;
+  document.getElementById("hasilFlowrate").innerText=t.hasilFlowrate+fr.toFixed(2);
+}
+window.onload = ubahBahasa;
+</script>
+</body>
+</html>
