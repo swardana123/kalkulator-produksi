@@ -33,7 +33,7 @@
   
   <div class="tab-container">
     <div class="tab active" onclick="showTab(0)" id="tab0">Hitung Waktu Produksi</div>
-    <div class="tab" onclick="showTab(1)" id="tab1">Kalkulator Produksi Terbaik</div>
+    <div class="tab" onclick="showTab(1)" id="tab1">Perhitungan Waktu Angkat Finish Good</div>
     <div class="tab" onclick="showTab(2)" id="tab2">Perhitungan Air Recycle</div>
     <div class="tab" onclick="showTab(3)" id="tab3">Flowrate Baru</div>
   </div>
@@ -53,7 +53,7 @@
   
   <!-- Tab 1 -->
   <div id="tab-1" class="content">
-    <h2 id="judul1">Kalkulator Produksi Terbaik</h2>
+    <h2 id="judul1">Perhitungan Waktu Angkat Finish Good</h2>
     <input id="berat" type="number"/>
     <select id="bahan" onchange="aturGSMdanPisau()">
       <option id="optBahan0" value="">Pilih Bahan</option>
@@ -92,8 +92,8 @@
 const teks = {
   id:{
     judulHalaman:"Gabungan Kalkulator Produksi",
-    tab0:"Hitung Waktu Produksi",tab1:"Kalkulator Produksi Terbaik",tab2:"Perhitungan Air Recycle",tab3:"Flowrate Baru",
-    judul0:"Hitung Waktu Produksi",judul1:"Kalkulator Produksi Terbaik",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru",
+    tab0:"Hitung Waktu Produksi",tab1:"Perhitungan Waktu Angkat Finish Good",tab2:"Perhitungan Air Recycle",tab3:"Flowrate Baru",
+    judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru",
     btnPengangkatan:"Hitung Waktu Pengangkatan",hasilPengangkatan:"Durasi: ",alert:"Mohon lengkapi semua data yang diperlukan",
     btnHitung:"Hitung Waktu",hasil:"Durasi: ",
     btnAir:"Hitung Air Recycle",hasilAirRecycle:"Jumlah Air yang Diperlukan: ",
@@ -109,8 +109,8 @@ const teks = {
   },
   en:{
     judulHalaman:"Combined Production Calculator",
-    tab0:"Production Time Calculation",tab1:"Best Production Calculator",tab2:"Water Recycle Calculation",tab3:"New Flowrate",
-    judul0:"Production Time Calculation",judul1:"Best Production Calculator",judul2:"Water Recycle Calculation",judul3:"New Flowrate",
+    tab0:"Production Time Calculation",tab1:"Finish Good Lifting Time Calculation",tab2:"Water Recycle Calculation",tab3:"New Flowrate",
+    judul0:"Production Time Calculation",judul1:"Finish Good Lifting Time Calculation",judul2:"Water Recycle Calculation",judul3:"New Flowrate",
     btnPengangkatan:"Calculate Lifting Time",hasilPengangkatan:"Duration: ",alert:"Please complete all required fields",
     btnHitung:"Calculate Time",hasil:"Duration: ",
     btnAir:"Calculate Water Recycle",hasilAirRecycle:"Required Water Amount: ",
@@ -126,8 +126,8 @@ const teks = {
   },
   zh:{
     judulHalaman:"生产计算器合集",
-    tab0:"生产时间计算",tab1:"最佳生产计算器",tab2:"循环水计算",tab3:"最新流速",
-    judul0:"生产时间计算",judul1:"最佳生产计算器",judul2:"循环水计算",judul3:"最新流速",
+    tab0:"生产时间计算",tab1:"成品提取时间计算",tab2:"循环水计算",tab3:"最新流速",
+    judul0:"生产时间计算",judul1:"成品提取时间计算",judul2:"循环水计算",judul3:"最新流速",
     btnPengangkatan:"计算提升时间",hasilPengangkatan:"时长：",alert:"请完整填写所有必要信息",
     btnHitung:"计算时间",hasil:"时长：",
     btnAir:"计算循环水",hasilAirRecycle:"所需水量：",
