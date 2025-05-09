@@ -3,25 +3,67 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kalkulator Produksi</title>
+  <title>Kalkulator Produksi Lengkap</title>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(to bottom right, #e3f2fd, #ffffff); margin:0; padding:10px; color:#333; }
     .header { display:flex; flex-direction:column; gap:10px; align-items:center; margin-bottom:20px; }
     .header h1 { font-size:1.5rem; text-align:center; margin-top: 0; margin-bottom: 5px; }
     select { padding:8px; font-size:1rem; border-radius:6px; border:1px solid #ccc; }
-    .tab-container { display:flex; margin-bottom:10px; border-radius:8px; overflow:hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .tab { flex:1; padding:10px; background-color:#eee; text-align:center; cursor:pointer; transition:background-color .3s; font-size:.95rem; border-right: 1px solid #ddd; }
+    .tab-container { display:flex; flex-wrap: wrap; margin-bottom:10px; border-radius:8px; overflow:hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .tab { flex:1; min-width: 150px; padding:10px; background-color:#eee; text-align:center; cursor:pointer; transition:background-color .3s; font-size:.90rem; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;}
     .tab:last-child { border-right: none; }
-    .tab.active { background-color:#2196F3; color:white; font-weight:bold; }
-    .content { display:none; background:white; padding:15px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.1); animation: fadeIn 0.5s; }
+    .tab.active { background-color:#2196F3; color:white; font-weight:bold; border-bottom-color: #2196F3; }
+    .content { display:none; background:white; padding:15px; border-radius:0 0 8px 8px; box-shadow:0 2px 10px rgba(0,0,0,.1); animation: fadeIn 0.5s; margin-top:-1px; /* Overlap bottom border of tabs */ }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .content.active { display:block; }
     input, select, button { width:100%; max-width:400px; padding:10px; margin:8px 0; font-size:1rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
     button { background-color:#2196F3; color:white; border:none; cursor:pointer; transition: background-color 0.3s; }
     button:hover { background-color:#1976D2; }
     .hasil { margin-top:10px; padding: 10px; background-color: #e8f5e9; border-left: 5px solid #4CAF50; font-weight:bold; color:#2E7D32; border-radius: 4px; }
-    .hidden { display:none; } /* Utility class to hide GSM/Pisau initially */
+    .hidden { display:none !important; }
+    input[readonly] {
+        background-color: #e9ecef; /* Common readonly input style */
+        color: #495057;
+        cursor: not-allowed;
+    }
     h2 { margin-top: 0; color: #1976D2; }
+
+    /* Notifikasi Popup */
+    .notifikasi-popup {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: opacity 0.5s, transform 0.5s;
+        opacity: 0;
+        transform: translateY(100px);
+        pointer-events: none;
+    }
+    .notifikasi-popup.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .notifikasi-popup button {
+        background-color: white;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        max-width: 100px;
+        margin: 0;
+        width: auto;
+    }
   </style>
 </head>
 <body>
@@ -36,10 +78,10 @@
 
   <div class="tab-container">
     <div class="tab active" onclick="showTab(0)" id="tab0">Hitung Waktu Produksi</div>
-    <div class="tab" onclick="showTab(1)" id="tab1">Perhitungan Waktu Angkat Finish Good</div>
-    <div class="tab" onclick="showTab(2)" id="tab2">Perhitungan Air Recycle</div>
+    <div class="tab" onclick="showTab(1)" id="tab1">Waktu Angkat FG</div>
+    <div class="tab" onclick="showTab(2)" id="tab2">Air Recycle</div>
     <div class="tab" onclick="showTab(3)" id="tab3">Flowrate Baru</div>
-  </div>
+    <div class="tab" onclick="showTab(4)" id="tab4">Flowrate Headbox</div> </div>
 
   <div id="tab-0" class="content active">
     <h2 id="judul0">Hitung Waktu Produksi</h2>
@@ -49,8 +91,8 @@
     <input id="waktuPengangkatan" type="number" />
     <input id="tanggalMulai" type="date" />
     <input id="jamMulai" type="time" />
-    <button onclick="hitungWaktuPengangkatan()" id="btnPengangkatan">Hitung Waktu Pengangkatan</button>
-    <div class="hasil" id="hasilPengangkatan">Durasi: </div>
+    <button onclick="hitungWaktuPengangkatan()" id="btnPengangkatan">Hitung Waktu Selesai</button>
+    <div class="hasil" id="hasilPengangkatan">Waktu Selesai Produksi: </div>
   </div>
 
   <div id="tab-1" class="content">
@@ -65,8 +107,8 @@
     <input class="hidden" id="gsm" type="number" placeholder="GSM (auto)" readonly/>
     <input class="hidden" id="pisau" type="number" placeholder="Pisau (auto)" readonly/>
     <input id="speed" type="number" />
-    <button onclick="hitung()" id="btnHitung">Hitung Waktu</button>
-    <div class="hasil" id="hasil">Durasi: </div>
+    <button onclick="hitungWaktuAngkat()" id="btnHitung">Hitung Durasi Angkat</button>
+    <div class="hasil" id="hasilWaktuAngkat">Durasi Angkat: </div>
   </div>
 
   <div id="tab-2" class="content">
@@ -83,76 +125,125 @@
     <input id="flowAwal" type="number" step="any" />
     <input id="kecepatanAwal" type="number" step="any" />
     <input id="kecepatanBaru" type="number" step="any" />
-    <button onclick="hitungFlowrateBaru()" id="btnFlowrate">Hitung Flowrate</button>
-    <div class="hasil" id="hasilFlowrate">Laju Aliran yang Disarankan: </div>
+    <button onclick="hitungFlowrateBaru()" id="btnFlowrate">Hitung Flowrate Baru</button>
+    <div class="hasil" id="hasilFlowrate">Laju Aliran Disarankan: </div>
+  </div>
+
+  <div id="tab-4" class="content">
+    <h2 id="judul4">Mencari Flow rate Headbox</h2> <select id="bahanFormula" onchange="aturGSMFormula()">
+      <option id="optBahanFormula0" value="">Pilih Bahan</option>
+      <option value="Bouyan">Bouyan</option>
+      <option value="Highlander">Highlander</option>
+    </select>
+    <input id="gsmFormula" type="number" step="any" readonly class="hidden"/>
+    <input id="kecepatanBeltingFormula" type="number" step="any"/>
+    <input id="lebarKertasFormula" type="number" step="any"/>
+    <input id="pulpConcentrationFormula" type="number" step="any"/>
+    <button onclick="hitungFormulaZatPadat()" id="btnFormulaZatPadat">Hitung Flowrate Headbox</button> <div class="hasil" id="hasilFormulaZatPadat">Flowrate Headbox: </div> </div>
+
+  <div id="notifikasiSelesaiPopup" class="notifikasi-popup">
+    <span id="teksNotifikasiSelesai"></span>
+    <button id="btnTutupNotifikasi" onclick="tutupNotifikasiSelesai()">Tutup</button>
   </div>
 
 <script>
+// Variabel global untuk notifikasi
+let targetWaktuSelesaiNotifikasi = null;
+let intervalCekWaktuNotifikasi = null;
+let notifikasiSudahDitampilkan = false;
+
 const teks = {
   id:{
     judulHalaman:"Gabungan Kalkulator Produksi",
-    tab0:"Hitung Waktu Produksi",tab1:"Perhitungan Waktu Angkat Finish Good",tab2:"Perhitungan Air Recycle",tab3:"Flowrate Baru",
-    judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru",
-    btnPengangkatan:"Hitung Waktu Pengangkatan",hasilPengangkatan:"Durasi: ",alert:"Mohon lengkapi semua data yang diperlukan dengan benar.",
-    btnHitung:"Hitung Waktu",hasil:"Durasi: ",
+    tab0:"Hitung Waktu Produksi",tab1:"Waktu Angkat FG",tab2:"Air Recycle",tab3:"Flowrate Baru", tab4:"Flowrate Headbox", // Diperbarui
+    judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru", judul4:"Mencari Flow rate Headbox", // Diperbarui
+    btnPengangkatan:"Hitung Waktu Selesai",hasilPengangkatan:"Waktu Selesai Produksi: ",alert:"Mohon lengkapi semua data yang diperlukan dengan benar.",
+    btnHitung:"Hitung Durasi Angkat",hasilWaktuAngkat:"Durasi Angkat: ",
     btnAir:"Hitung Air Recycle",hasilAirRecycle:"Jumlah Air yang Diperlukan: ",
-    btnFlowrate:"Hitung Flowrate",hasilFlowrate:"Laju Aliran yang Disarankan: ",
-    optBahan0:"Pilih Bahan",
+    btnFlowrate:"Hitung Flowrate Baru",hasilFlowrate:"Laju Aliran Disarankan: ",
+    btnFormulaZatPadat:"Hitung Flowrate Headbox", hasilFormulaZatPadat:"Flowrate Headbox: ", // Diperbarui
+    optBahan0:"Pilih Bahan", optBahanFormula0: "Pilih Bahan",
+    notifikasi: {
+        pesan: "Waktu produksi yang dihitung telah tercapai!",
+        tutupButton: "Tutup"
+    },
     placeholders:{
       targetProduksi:"Target Produksi (cth: 1500)",beratBobbin:"Berat Bobbin (kg, cth: 15)",
-      jumlahPotongan:"Jumlah Potongan per Bobbin (cth: 10)",waktuPengangkatan:"Waktu Pengangkatan per Bobbin (menit)",
+      jumlahPotongan:"Potongan/Bobbin (cth: 10)",waktuPengangkatan:"Waktu Angkat/Bobbin (menit)",
       tanggalMulai:"Tanggal Mulai",jamMulai:"Jam Mulai (misal: 08:00)",
-      berat:"Berat Roll (kg), contoh: 16",
-      gsm:"GSM (otomatis setelah pilih bahan)", pisau:"Pisau (otomatis setelah pilih bahan)",
+      berat:"Berat Roll (kg), cth: 16",
+      gsm:"GSM (otomatis)", pisau:"Pisau (otomatis)",
       speed:"Kecepatan Belting (m/detik, cth: 10.20)",
-      jumlahRecycle:"Jumlah Recycle (kg, contoh:60)",moisture:"Moisture (fraksi, cth:0.93)",
+      jumlahRecycle:"Jumlah Recycle (kg, cth:60)",moisture:"Moisture (fraksi, cth:0.93)",
       konsentrasi:"Konsentrasi (fraksi, cth:0.16)",
-      flowAwal:"Flow rate awal (L/jam, misal:100)",kecepatanAwal:"Kecepatan belting saat ini (m/detik)",
-      kecepatanBaru:"Kecepatan belting terbaru (m/detik)"
+      flowAwal:"Flow rate awal (L/jam, cth:100)",kecepatanAwal:"Kecepatan belting awal (m/detik)",
+      kecepatanBaru:"Kecepatan belting baru (m/detik)",
+      gsmFormula: "GSM (otomatis dari bahan)",
+      kecepatanBeltingFormula: "Kecepatan Belting (m/detik)",
+      lebarKertasFormula: "Lebar Kertas (meter)",
+      pulpConcentrationFormula: "Konsentrasi Pulp (fraksi, cth: 0.17)"
     }
   },
   en:{
     judulHalaman:"Combined Production Calculator",
-    tab0:"Production Time",tab1:"Finish Good Lift Time",tab2:"Water Recycle",tab3:"New Flowrate",
-    judul0:"Production Time Calculation",judul1:"Finish Good Lifting Time Calculation",judul2:"Water Recycle Calculation",judul3:"New Flowrate Calculation",
-    btnPengangkatan:"Calculate End Time",hasilPengangkatan:"Ends on: ",alert:"Please complete all required fields correctly.",
-    btnHitung:"Calculate Duration",hasil:"Duration: ",
-    btnAir:"Calculate Water",hasilAirRecycle:"Required Water: ",
+    tab0:"Production Time",tab1:"FG Lifting Time",tab2:"Water Recycle",tab3:"New Flowrate", tab4:"Headbox Flowrate", // Updated
+    judul0:"Production Time Calculation",judul1:"Finish Good Lifting Time Calculation",judul2:"Water Recycle Calculation",judul3:"New Flowrate Calculation", judul4:"Headbox Flowrate Calculation", // Updated
+    btnPengangkatan:"Calculate End Time",hasilPengangkatan:"Production Ends: ",alert:"Please complete all required fields correctly.",
+    btnHitung:"Calculate Lifting Duration",hasilWaktuAngkat:"Lifting Duration: ",
+    btnAir:"Calculate Water Recycle",hasilAirRecycle:"Required Water: ",
     btnFlowrate:"Calculate New Flowrate",hasilFlowrate:"Recommended Flow Rate: ",
-    optBahan0:"Select Material",
+    btnFormulaZatPadat:"Calculate Headbox Flowrate", hasilFormulaZatPadat:"Headbox Flowrate: ", // Updated
+    optBahan0:"Select Material", optBahanFormula0: "Select Material",
+    notifikasi: {
+        pesan: "The calculated production time has been reached!",
+        tutupButton: "Close"
+    },
     placeholders:{
       targetProduksi:"Target Output (e.g.: 1500)",beratBobbin:"Bobbin Weight (kg, e.g.: 15)",
-      jumlahPotongan:"Cuts per Bobbin (e.g.: 10)",waktuPengangkatan:"Lifting Time per Bobbin (minutes)",
+      jumlahPotongan:"Cuts/Bobbin (e.g.: 10)",waktuPengangkatan:"Lifting Time/Bobbin (min)",
       tanggalMulai:"Start Date",jamMulai:"Start Time (e.g., 08:00)",
       berat:"Roll Weight (kg), e.g.: 16",
-      gsm:"GSM (auto after material selection)", pisau:"Cutter (auto after material selection)",
+      gsm:"GSM (auto)", pisau:"Cutter (auto)",
       speed:"Belt Speed (m/sec, e.g.: 10.20)",
       jumlahRecycle:"Recycle Amount (kg, e.g.: 60)",moisture:"Moisture (fraction, e.g.: 0.93)",
       konsentrasi:"Concentration (fraction, e.g.: 0.16)",
-      flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Current belt speed (m/sec)",
-      kecepatanBaru:"New belt speed (m/sec)"
+      flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Initial belt speed (m/sec)",
+      kecepatanBaru:"New belt speed (m/sec)",
+      gsmFormula: "GSM (auto from material)",
+      kecepatanBeltingFormula: "Belt Speed (m/sec)",
+      lebarKertasFormula: "Paper Width (meter)",
+      pulpConcentrationFormula: "Pulp Concentration (fraction, e.g.: 0.17)"
     }
   },
   zh:{
     judulHalaman:"生产计算器合集",
-    tab0:"生产时间",tab1:"成品提取时间",tab2:"循环水",tab3:"新流速",
-    judul0:"生产时间计算",judul1:"成品提取时间计算",judul2:"循环水计算",judul3:"新流速计算",
-    btnPengangkatan:"计算结束时间",hasilPengangkatan:"结束于：",alert:"请正确填写所有必填信息。",
-    btnHitung:"计算时长",hasil:"时长：",
-    btnAir:"计算水量",hasilAirRecycle:"所需水量：",
+    tab0:"生产时间",tab1:"成品提取时间",tab2:"循环水",tab3:"新流速", tab4:"网前箱流速", // Updated
+    judul0:"生产时间计算",judul1:"成品提取时间计算",judul2:"循环水计算",judul3:"新流速计算", judul4:"计算网前箱流速", // Updated
+    btnPengangkatan:"计算结束时间",hasilPengangkatan:"生产结束于：",alert:"请正确填写所有必填信息。",
+    btnHitung:"计算提取时长",hasilWaktuAngkat:"提取时长：",
+    btnAir:"计算循环水量",hasilAirRecycle:"所需水量：",
     btnFlowrate:"计算新流速",hasilFlowrate:"建议流速：",
-    optBahan0:"选择材料",
+    btnFormulaZatPadat:"计算网前箱流速", hasilFormulaZatPadat:"网前箱流速：", // Updated
+    optBahan0:"选择材料", optBahanFormula0: "选择材料",
+    notifikasi: {
+        pesan: "计算的生产时间已到！",
+        tutupButton: "关闭"
+    },
     placeholders:{
       targetProduksi:"目标产量（例如：1500）",beratBobbin:"筒重（公斤，例如：15）",
       jumlahPotongan:"每筒切割数（例如：10）",waktuPengangkatan:"每筒提升时间（分钟）",
       tanggalMulai:"开始日期",jamMulai:"开始时间（例如：08:00）",
       berat:"卷重（公斤），例如：16",
-      gsm:"克重（选择材料后自动）", pisau:"刀具（选择材料后自动）",
+      gsm:"克重（自动）", pisau:"刀具（自动）",
       speed:"皮带速度（米/秒，例如：10.20）",
       jumlahRecycle:"循环数量（公斤，例如：60）",moisture:"水分（小数，例如：0.93）",
       konsentrasi:"浓度（小数，例如：0.16）",
       flowAwal:"初始流速（升/小时，例如：100）",kecepatanAwal:"当前皮带速度（米/秒）",
-      kecepatanBaru:"最新皮带速度（米/秒）"
+      kecepatanBaru:"最新皮带速度（米/秒）",
+      gsmFormula: "克重（来自材料选择）",
+      kecepatanBeltingFormula: "皮带速度（米/秒）",
+      lebarKertasFormula: "纸张宽度（米）",
+      pulpConcentrationFormula: "纸浆浓度（小数，例如：0.17）"
     }
   }
 };
@@ -160,28 +251,43 @@ const teks = {
 function ubahBahasa(){
   const lang=document.getElementById("language").value, t=teks[lang];
   document.getElementById("judulHalaman").innerText=t.judulHalaman;
-  ["tab0","tab1","tab2","tab3"].forEach((id,i)=>document.getElementById(id).innerText=t["tab"+i]);
-  ["judul0","judul1","judul2","judul3"].forEach((id,i)=>document.getElementById(id).innerText=t["judul"+i]);
+  ["tab0","tab1","tab2","tab3", "tab4"].forEach((id,i)=>{
+      if(document.getElementById(id)) document.getElementById(id).innerText=t["tab"+i]
+  });
+  ["judul0","judul1","judul2","judul3", "judul4"].forEach((id,i)=>{
+      if(document.getElementById(id)) document.getElementById(id).innerText=t["judul"+i]
+  });
   
   document.getElementById("btnPengangkatan").innerText=t.btnPengangkatan;
   document.getElementById("hasilPengangkatan").innerText=t.hasilPengangkatan;
   document.getElementById("btnHitung").innerText=t.btnHitung;
-  document.getElementById("hasil").innerText=t.hasil;
+  document.getElementById("hasilWaktuAngkat").innerText=t.hasilWaktuAngkat;
   document.getElementById("btnAir").innerText=t.btnAir;
   document.getElementById("hasilAirRecycle").innerText=t.hasilAirRecycle;
   document.getElementById("btnFlowrate").innerText=t.btnFlowrate;
   document.getElementById("hasilFlowrate").innerText=t.hasilFlowrate;
+  document.getElementById("btnFormulaZatPadat").innerText=t.btnFormulaZatPadat; // ID internal tetap, teks berubah
+  document.getElementById("hasilFormulaZatPadat").innerText=t.hasilFormulaZatPadat; // ID internal tetap, teks berubah
+
   document.getElementById("optBahan0").innerText = t.optBahan0;
+  document.getElementById("optBahanFormula0").innerText = t.optBahanFormula0;
+
 
   Object.entries(t.placeholders).forEach(([id,text])=>{
     const el=document.getElementById(id);
-    if(el) { // Check if element exists
-        if(el.tagName==="INPUT") el.placeholder=text;
-        else el.innerText=text; // For options or other elements if needed
+    if(el) {
+        if(el.tagName==="INPUT" && !el.readOnly) el.placeholder=text; 
+        else if (el.tagName !== "INPUT") el.innerText=text;
     }
   });
-  // Update GSM/Pisau placeholder if they are visible
-  aturGSMdanPisau(true); // Pass true to only update placeholders if visible
+  aturGSMdanPisau(); 
+  aturGSMFormula();
+
+  const popupNotifikasi = document.getElementById("notifikasiSelesaiPopup");
+  if (popupNotifikasi && popupNotifikasi.classList.contains("show")) {
+      document.getElementById("teksNotifikasiSelesai").innerText = t.notifikasi.pesan;
+      document.getElementById("btnTutupNotifikasi").innerText = t.notifikasi.tutupButton;
+  }
 }
 
 function showTab(index){
@@ -204,16 +310,24 @@ function hitungWaktuPengangkatan(){
   const lang=document.getElementById("language").value;
   const t=teks[lang];
 
+  tutupNotifikasiSelesai();
+  if (intervalCekWaktuNotifikasi) {
+      clearInterval(intervalCekWaktuNotifikasi);
+      intervalCekWaktuNotifikasi = null;
+  }
+  targetWaktuSelesaiNotifikasi = null;
+  notifikasiSudahDitampilkan = false;
+
   const target = getValue("targetProduksi", 1500);
   const berat = getValue("beratBobbin", 15);
   const pot = getValue("jumlahPotongan", 10);
-  const waktuPengangkatanPerBobbin = getValue("waktuPengangkatan", null); // Must be filled
+  const waktuPengangkatanPerBobbin = getValue("waktuPengangkatan", null);
   const jamMulai = getValue("jamMulai", null, false);
   const tgl = getValue("tanggalMulai", null, false);
 
   if(target <= 0 || berat <= 0 || pot <= 0 || waktuPengangkatanPerBobbin === null || waktuPengangkatanPerBobbin <= 0 || !jamMulai || !tgl){
     alert(t.alert);
-    document.getElementById("hasilPengangkatan").innerText=t.hasilPengangkatan; // Reset result
+    document.getElementById("hasilPengangkatan").innerText=t.hasilPengangkatan;
     return;
   }
 
@@ -221,10 +335,12 @@ function hitungWaktuPengangkatan(){
   const totalWaktuPengangkatanMenit = jumlahBobbin * waktuPengangkatanPerBobbin;
 
   const [y,m,d]=tgl.split("-").map(Number);
-  const [h,min]=jamMulai.split(":").map(Number);
+  const [h,parsedMin]=jamMulai.split(":").map(Number);
 
-  const dt=new Date(y,m-1,d,h,min);
+  const dt=new Date(y,m-1,d,h,parsedMin);
   dt.setMinutes(dt.getMinutes() + Math.round(totalWaktuPengangkatanMenit));
+  
+  targetWaktuSelesaiNotifikasi = new Date(dt.getTime());
 
   const dateOptions = {year:"numeric",month:"2-digit",day:"2-digit"};
   let localeString = "id-ID";
@@ -234,15 +350,24 @@ function hitungWaktuPengangkatan(){
   const dateStr=dt.toLocaleDateString(localeString, dateOptions);
   const timeStr=dt.toTimeString().slice(0,5);
   document.getElementById("hasilPengangkatan").innerText=t.hasilPengangkatan+dateStr+" "+timeStr;
+
+  if (targetWaktuSelesaiNotifikasi > new Date()) {
+      intervalCekWaktuNotifikasi = setInterval(cekWaktuProduksiSelesaiSecaraBerkala, 5000);
+      cekWaktuProduksiSelesaiSecaraBerkala(); 
+  } else {
+      cekWaktuProduksiSelesaiSecaraBerkala();
+  }
 }
 
-function aturGSMdanPisau(placeholderOnly = false){
+function aturGSMdanPisau(){
   const b=document.getElementById("bahan").value;
   const gsmEl=document.getElementById("gsm");
   const pisauEl=document.getElementById("pisau");
   const lang = document.getElementById("language").value;
-  const placeholderTextGsm = teks[lang].placeholders.gsm;
-  const placeholderTextPisau = teks[lang].placeholders.pisau;
+  const t = teks[lang];
+  
+  gsmEl.placeholder = t.placeholders.gsm;
+  pisauEl.placeholder = t.placeholders.pisau;
 
   let gsmVal = "", pisauVal = "";
 
@@ -253,23 +378,17 @@ function aturGSMdanPisau(placeholderOnly = false){
   if (b) {
     gsmEl.classList.remove("hidden");
     pisauEl.classList.remove("hidden");
-    if (!placeholderOnly) {
-        gsmEl.value=gsmVal;
-        pisauEl.value=pisauVal;
-    }
+    gsmEl.value=gsmVal;
+    pisauEl.value=pisauVal;
   } else {
     gsmEl.classList.add("hidden");
     pisauEl.classList.add("hidden");
-    if (!placeholderOnly) {
-        gsmEl.value="";
-        pisauEl.value="";
-    }
+    gsmEl.value="";
+    pisauEl.value="";
   }
-  gsmEl.placeholder = placeholderTextGsm;
-  pisauEl.placeholder = placeholderTextPisau;
 }
 
-function hitung(){
+function hitungWaktuAngkat(){
   const lang=document.getElementById("language").value;
   const t=teks[lang];
 
@@ -280,11 +399,11 @@ function hitung(){
 
   if(gsm === null || pis === null || speed === null || berat === null || gsm <= 0 || pis <= 0 || speed <= 0 || berat <= 0){
     alert(t.alert);
-    document.getElementById("hasil").innerText=t.hasil; // Reset result
+    document.getElementById("hasilWaktuAngkat").innerText=t.hasilWaktuAngkat;
     return;
   }
   const dur=berat/(gsm*pis*speed);
-  document.getElementById("hasil").innerText=t.hasil+dur.toFixed(2)+(lang==="zh"?" 秒":lang==="en"?" seconds":" detik");
+  document.getElementById("hasilWaktuAngkat").innerText=t.hasilWaktuAngkat+dur.toFixed(2)+(lang==="zh"?" 秒":lang==="en"?" seconds":" detik");
 }
 
 function hitungAirRecycle(){
@@ -294,9 +413,9 @@ function hitungAirRecycle(){
   const mo = getValue("moisture", 0.93);
   const ko = getValue("konsentrasi", 0.16);
 
-  if(jr === null || jr <= 0 || mo <= 0 || mo >= 1 || ko <= 0 || ko >= 1){ // Added more checks for moisture/concentration logic
+  if(jr === null || jr <= 0 || mo <= 0 || mo >= 1 || ko <= 0 || ko >= 1){
     alert(t.alert);
-    document.getElementById("hasilAirRecycle").innerText=t.hasilAirRecycle; // Reset result
+    document.getElementById("hasilAirRecycle").innerText=t.hasilAirRecycle;
     return;
   }
   const air=(jr*mo)/ko-jr;
@@ -310,27 +429,140 @@ function hitungFlowrateBaru(){
   const ka = getValue("kecepatanAwal", null);
   const kb = getValue("kecepatanBaru", null);
 
-  if(fa === null || ka === null || kb === null || ka == 0 ){ // Kecepatan awal tidak boleh 0
+  if(fa === null || ka === null || kb === null || ka == 0 ){
     alert(t.alert);
-    document.getElementById("hasilFlowrate").innerText=t.hasilFlowrate; // Reset result
+    document.getElementById("hasilFlowrate").innerText=t.hasilFlowrate;
     return;
   }
   const fr=fa/ka*kb;
   document.getElementById("hasilFlowrate").innerText=t.hasilFlowrate+fr.toFixed(2);
 }
 
+function aturGSMFormula(){
+    const bahanValue = document.getElementById("bahanFormula").value;
+    const gsmEl = document.getElementById("gsmFormula");
+    const lebarKertasEl = document.getElementById("lebarKertasFormula");
+    const kecepatanBeltingEl = document.getElementById("kecepatanBeltingFormula");
+
+    const lang = document.getElementById("language").value;
+    const t = teks[lang];
+
+    gsmEl.placeholder = t.placeholders.gsmFormula;
+    
+    let gsmVal = "";
+    let lebarKertasVal = lebarKertasEl.value; 
+    let kecepatanVal = kecepatanBeltingEl.value; 
+    
+    let lebarKertasReadonly = false;
+    let kecepatanReadonly = false;
+
+    if (bahanValue === "Bouyan") {
+        gsmVal = 0.22;
+        lebarKertasVal = 1.28;
+        kecepatanVal = 10.20;
+        lebarKertasReadonly = true;
+        kecepatanReadonly = true;
+        gsmEl.classList.remove("hidden");
+    } else if (bahanValue === "Highlander") {
+        gsmVal = 0.095;
+        lebarKertasVal = 1.38;
+        // kecepatanVal untuk Highlander dipertahankan jika sudah diisi, atau dikosongkan jika belum pernah diisi setelah pilih Highlander
+        if (kecepatanBeltingEl.readOnly) kecepatanVal = ""; // Jika sebelumnya Bouyan, kosongkan speed untuk Highlander
+        lebarKertasReadonly = true;
+        kecepatanReadonly = false; 
+        gsmEl.classList.remove("hidden");
+    } else { 
+        gsmVal = "";
+        lebarKertasVal = ""; 
+        kecepatanVal = "";  
+        lebarKertasReadonly = false;
+        kecepatanReadonly = false;
+        gsmEl.classList.add("hidden");
+    }
+
+    gsmEl.value = gsmVal;
+
+    lebarKertasEl.value = lebarKertasVal;
+    lebarKertasEl.readOnly = lebarKertasReadonly;
+    lebarKertasEl.placeholder = lebarKertasReadonly ? "" : t.placeholders.lebarKertasFormula;
+
+    kecepatanBeltingEl.value = kecepatanVal;
+    kecepatanBeltingEl.readOnly = kecepatanReadonly;
+    kecepatanBeltingEl.placeholder = kecepatanReadonly ? "" : t.placeholders.kecepatanBeltingFormula;
+}
+
+
+function hitungFormulaZatPadat(){ // Nama fungsi internal tetap, hanya teks yang berubah
+    const lang = document.getElementById("language").value;
+    const t = teks[lang];
+
+    const gsm = getValue("gsmFormula", null);
+    const speed = getValue("kecepatanBeltingFormula", null);
+    const paperWidth = getValue("lebarKertasFormula", null);
+    const pulpConcentration = getValue("pulpConcentrationFormula", null);
+
+    const konstantaAir = 0.93;
+    const konstantaTetap = 1.04;
+
+    if (gsm === null || gsm <= 0 ||
+        speed === null || speed <= 0 ||
+        paperWidth === null || paperWidth <= 0 ||
+        pulpConcentration === null || pulpConcentration <= 0) {
+        alert(t.alert);
+        document.getElementById("hasilFormulaZatPadat").innerText = t.hasilFormulaZatPadat; // Teks hasil diperbarui
+        return;
+    }
+
+    const hasil = (gsm * konstantaAir * speed * paperWidth) / pulpConcentration / konstantaTetap;
+    document.getElementById("hasilFormulaZatPadat").innerText = t.hasilFormulaZatPadat + hasil.toFixed(2); // Teks hasil diperbarui
+}
+
+function tampilkanNotifikasiProduksiSelesai() {
+    const lang = document.getElementById("language").value;
+    const t = teks[lang];
+    const popup = document.getElementById("notifikasiSelesaiPopup");
+
+    document.getElementById("teksNotifikasiSelesai").innerText = t.notifikasi.pesan;
+    document.getElementById("btnTutupNotifikasi").innerText = t.notifikasi.tutupButton;
+    
+    popup.classList.add("show");
+
+    notifikasiSudahDitampilkan = true;
+    if (intervalCekWaktuNotifikasi) {
+        clearInterval(intervalCekWaktuNotifikasi);
+        intervalCekWaktuNotifikasi = null;
+    }
+}
+
+function tutupNotifikasiSelesai() {
+    const popup = document.getElementById("notifikasiSelesaiPopup");
+    if (popup) popup.classList.remove("show");
+}
+
+function cekWaktuProduksiSelesaiSecaraBerkala() {
+    if (!targetWaktuSelesaiNotifikasi || notifikasiSudahDitampilkan) {
+        return;
+    }
+    const sekarang = new Date();
+    if (sekarang >= targetWaktuSelesaiNotifikasi) {
+        tampilkanNotifikasiProduksiSelesai();
+    }
+}
+
 window.onload = function() {
-    ubahBahasa(); // Set initial language and placeholders
-    // Set current date for date input as a sensible default
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const dd = String(today.getDate()).padStart(2, '0');
-    const formattedToday = `${yyyy}-${mm}-${dd}`;
+    ubahBahasa(); 
     const tanggalMulaiEl = document.getElementById('tanggalMulai');
-    if(tanggalMulaiEl) {
+    if(tanggalMulaiEl && !tanggalMulaiEl.value) { 
+        const today = new Date();
+        // Untuk mendapatkan tanggal lokal yang benar sesuai zona waktu pengguna browser
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedToday = `${year}-${month}-${day}`;
         tanggalMulaiEl.value = formattedToday;
     }
+    tutupNotifikasiSelesai();
+    aturGSMFormula(); 
 };
 </script>
 </body>
