@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kalkulator Produksi Lengkap dengan AI</title>
+  <title>Kalkulator Produksi Lengkap</title>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(to bottom right, #e3f2fd, #ffffff); margin:0; padding:10px; color:#333; }
     .header {
@@ -24,7 +24,7 @@
     .content { display:none; background:white; padding:15px; border-radius:0 0 8px 8px; box-shadow:0 2px 10px rgba(0,0,0,.1); animation: fadeIn 0.5s; margin-top:-1px; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .content.active { display:block; }
-    input, select, button, textarea { width:100%; max-width:400px; padding:10px; margin:8px 0; font-size:1rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
+    input, select, button { width:100%; max-width:400px; padding:10px; margin:8px 0; font-size:1rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
     label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9rem; color: #555;}
     button { background-color:#2196F3; color:white; border:none; cursor:pointer; transition: background-color 0.3s; }
     button:hover { background-color:#1976D2; }
@@ -73,14 +73,6 @@
         margin: 0;
         width: auto;
     }
-
-    /* Gaya untuk Tab Tanya AI */
-    #tab-5 textarea {
-        min-height: 100px;
-    }
-    #hasilTanyaAI {
-        white-space: pre-wrap; /* Agar spasi dan baris baru dipertahankan */
-    }
   </style>
 </head>
 <body>
@@ -89,7 +81,7 @@
     <select id="language" onchange="ubahBahasa()">
       <option value="id">Bahasa Indonesia</option>
       <option value="en">English</option>
-      <option value="zh">中文 (Mandarin)</option>
+      <option value="zh">ä¸­æ–‡ (Mandarin)</option>
     </select>
     <h1 id="judulHalaman">Gabungan Kalkulator Produksi</h1>
   </div>
@@ -100,52 +92,51 @@
     <div class="tab" onclick="showTab(2)" id="tab2">Air Recycle</div>
     <div class="tab" onclick="showTab(3)" id="tab3">Flowrate Baru</div>
     <div class="tab" onclick="showTab(4)" id="tab4">Flowrate Headbox</div>
-    <div class="tab" onclick="showTab(5)" id="tab5">Tanya AI</div>
   </div>
 
   <div id="tab-0" class="content active">
     <h2 id="judul0">Hitung Waktu Produksi</h2>
-    <input id="targetProduksi" type="number" placeholder="Target Produksi (cth: 1500)"/>
-    <input id="beratBobbin" type="number" placeholder="Berat Bobbin (kg, cth: 15)"/>
-    <input id="jumlahPotongan" type="number" placeholder="Potongan/Bobbin (cth: 10)"/>
-    <input id="waktuPengangkatan" type="number" placeholder="Waktu Angkat/Bobbin (menit)"/>
+    <input id="targetProduksi" type="number" />
+    <input id="beratBobbin" type="number" />
+    <input id="jumlahPotongan" type="number" />
+    <input id="waktuPengangkatan" type="number" />
     <input id="tanggalMulai" type="date" />
-    <input id="jamMulai" type="time" placeholder="Jam Mulai (misal: 08:00)"/>
-    <button id="btnPengangkatan" onclick="hitungWaktuPengangkatan()">Hitung Waktu Selesai</button>
+    <input id="jamMulai" type="time" />
+    <button onclick="hitungWaktuPengangkatan()" id="btnPengangkatan">Hitung Waktu Selesai</button>
     <div class="hasil" id="hasilPengangkatan">Waktu Selesai Produksi: </div>
   </div>
 
   <div id="tab-1" class="content">
     <h2 id="judul1">Perhitungan Waktu Angkat Finish Good</h2>
-    <input id="berat" type="number" placeholder="Berat Roll (kg), cth: 16"/>
+    <input id="berat" type="number" />
     <select id="bahan" onchange="aturGSMdanPisau()">
       <option id="optBahan0" value="">Pilih Bahan</option>
       <option id="optBahan1" value="Bouyan">Bouyan</option>
       <option id="optBahan2" value="BAT">BAT</option>
       <option id="optBahan3" value="Highlander">Highlander</option>
     </select>
-    <input class="hidden" id="gsm" type="number" readonly placeholder="GSM (otomatis)"/>
-    <input class="hidden" id="pisau" type="number" readonly placeholder="Pisau (otomatis)"/>
-    <input id="speed" type="number" placeholder="Kecepatan Belting (m/detik, cth: 10.20)"/>
-    <button id="btnHitung" onclick="hitungWaktuAngkat()">Hitung Durasi Angkat</button>
+    <input class="hidden" id="gsm" type="number" readonly/>
+    <input class="hidden" id="pisau" type="number" readonly/>
+    <input id="speed" type="number" />
+    <button onclick="hitungWaktuAngkat()" id="btnHitung">Hitung Durasi Angkat</button>
     <div class="hasil" id="hasilWaktuAngkat">Durasi Angkat: </div>
   </div>
 
   <div id="tab-2" class="content">
     <h2 id="judul2">Perhitungan Air Recycle</h2>
-    <input id="jumlahRecycle" type="number" placeholder="Jumlah Recycle (kg, cth:60)"/>
-    <input id="moisture" type="number" step="any" placeholder="Moisture (fraksi, cth:0.93)"/>
-    <input id="konsentrasi" type="number" step="any" placeholder="Konsentrasi (fraksi, cth:0.16)"/>
-    <button id="btnAir" onclick="hitungAirRecycle()">Hitung Air Recycle</button>
+    <input id="jumlahRecycle" type="number" />
+    <input id="moisture" type="number" step="any" />
+    <input id="konsentrasi" type="number" step="any" />
+    <button onclick="hitungAirRecycle()" id="btnAir">Hitung Air Recycle</button>
     <div class="hasil" id="hasilAirRecycle">Jumlah Air yang Diperlukan: </div>
   </div>
 
   <div id="tab-3" class="content">
     <h2 id="judul3">Flowrate Baru</h2>
-    <input id="flowAwal" type="number" step="any" placeholder="Flow rate awal (L/jam, cth:100)"/>
-    <input id="kecepatanAwal" type="number" step="any" placeholder="Kecepatan belting awal (m/detik)"/>
-    <input id="kecepatanBaru" type="number" step="any" placeholder="Kecepatan belting baru (m/detik)"/>
-    <button id="btnFlowrate" onclick="hitungFlowrateBaru()">Hitung Flowrate Baru</button>
+    <input id="flowAwal" type="number" step="any" />
+    <input id="kecepatanAwal" type="number" step="any" />
+    <input id="kecepatanBaru" type="number" step="any" />
+    <button onclick="hitungFlowrateBaru()" id="btnFlowrate">Hitung Flowrate Baru</button>
     <div class="hasil" id="hasilFlowrate">Laju Aliran Disarankan: </div>
   </div>
 
@@ -157,28 +148,21 @@
       <option id="optBahanHeadboxBouyan" value="Bouyan">Bouyan</option>
       <option id="optBahanHeadboxCustom" value="Custom">Custom</option>
     </select>
-
+    
     <label for="gsmFormula" id="lblGsmFormulaHeadbox">GSM:</label>
-    <input id="gsmFormula" type="number" step="any" placeholder="Input GSM (cth: 0.22)"/>
-
+    <input id="gsmFormula" type="number" step="any"/>
+    
     <label for="kecepatanBeltingFormula" id="lblKecepatanBeltingFormulaHeadbox">Kecepatan Belting (m/detik):</label>
-    <input id="kecepatanBeltingFormula" type="number" step="any" placeholder="Input Kecepatan (cth: 10.0)"/>
-
+    <input id="kecepatanBeltingFormula" type="number" step="any"/>
+    
     <label for="lebarKertasFormula" id="lblLebarKertasFormulaHeadbox">Lebar Kertas (meter):</label>
-    <input id="lebarKertasFormula" type="number" step="any" placeholder="Input Lebar (cth: 1.30)"/>
-
+    <input id="lebarKertasFormula" type="number" step="any"/>
+    
     <label for="pulpConcentrationFormula" id="lblPulpConcentrationFormulaHeadbox">Konsentrasi Pulp (fraksi):</label>
-    <input id="pulpConcentrationFormula" type="number" step="any" placeholder="cth: 0.17"/>
-
-    <button id="btnFormulaZatPadat" onclick="hitungFormulaHeadbox()">Hitung Flowrate Headbox</button>
+    <input id="pulpConcentrationFormula" type="number" step="any"/>
+    
+    <button onclick="hitungFormulaHeadbox()" id="btnFormulaZatPadat">Hitung Flowrate Headbox</button>
     <div class="hasil" id="hasilFormulaZatPadat">Flowrate Headbox: </div>
-  </div>
-
-  <div id="tab-5" class="content">
-    <h2 id="judul5">Tanya AI</h2>
-    <textarea id="pertanyaanAI" placeholder="Masukkan pertanyaan Anda tentang produksi..."></textarea>
-    <button id="btnTanyaAI" onclick="tanyaAI()">Tanya AI</button>
-    <div class="hasil" id="hasilTanyaAI">Jawaban AI: </div>
   </div>
 
   <div id="notifikasiSelesaiPopup" class="notifikasi-popup">
@@ -192,20 +176,16 @@ let targetWaktuSelesaiNotifikasi = null;
 let intervalCekWaktuNotifikasi = null;
 let notifikasiSudahDitampilkan = false;
 
-// **PERHATIAN: API KEY TERLIHAT DI SINI! JANGAN GUNAKAN UNTUK APLIKASI PUBLIK!**
-const groqApiKey = 'Gsk_GOdbyLKY4Hrq0HIdOuTXWGdyb3FYFg2S6eSWFMa7GiPsENQDgyuA';
-
 const teks = {
   id:{
     judulHalaman:"Gabungan Kalkulator Produksi",
-    tab0:"Hitung Waktu Produksi",tab1:"Waktu Angkat Finish Good",tab2:"Air Recycle",tab3:"Flowrate Baru", tab4:"Flowrate Headbox", tab5:"Tanya AI",
-    judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru", judul4:"Mencari Flow rate Headbox", judul5:"Tanya AI",
+    tab0:"Hitung Waktu Produksi",tab1:"Waktu Angkat Finish Good",tab2:"Air Recycle",tab3:"Flowrate Baru", tab4:"Flowrate Headbox",
+    judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru", judul4:"Mencari Flow rate Headbox",
     btnPengangkatan:"Hitung Waktu Selesai",hasilPengangkatan:"Waktu Selesai Produksi: ",alert:"Mohon lengkapi semua data yang diperlukan dengan benar.",
     btnHitung:"Hitung Durasi Angkat",hasilWaktuAngkat:"Durasi Angkat: ",
     btnAir:"Hitung Air Recycle",hasilAirRecycle:"Jumlah Air yang Diperlukan: ",
     btnFlowrate:"Hitung Flowrate Baru",hasilFlowrate:"Laju Aliran Disarankan: ",
     btnFormulaZatPadat:"Hitung Flowrate Headbox", hasilFormulaZatPadat:"Flowrate Headbox: ",
-    btnTanyaAI:"Tanya AI", hasilTanyaAI:"Jawaban AI: ",
     optBahan0:"Pilih Bahan",
     optBahanHeadbox0: "Pilih Material",
     optBahanHeadboxBouyan: "Bouyan",
@@ -223,5 +203,198 @@ const teks = {
       targetProduksi:"Target Produksi (cth: 1500)",beratBobbin:"Berat Bobbin (kg, cth: 15)",
       jumlahPotongan:"Potongan/Bobbin (cth: 10)",waktuPengangkatan:"Waktu Angkat/Bobbin (menit)",
       tanggalMulai:"Tanggal Mulai",jamMulai:"Jam Mulai (misal: 08:00)",
-      berat:"Berat
+      berat:"Berat Roll (kg), cth: 16",
+      gsm:"GSM (otomatis)", // Placeholder untuk GSM
+      pisau:"Pisau (otomatis)", // Placeholder untuk Pisau
+      speed:"Kecepatan Belting (m/detik, cth: 10.20)",
+      jumlahRecycle:"Jumlah Recycle (kg, cth:60)",moisture:"Moisture (fraksi, cth:0.93)",
+      konsentrasi:"Konsentrasi (fraksi, cth:0.16)",
+      flowAwal:"Flow rate awal (L/jam, cth:100)",kecepatanAwal:"Kecepatan belting awal (m/detik)",
+      kecepatanBaru:"Kecepatan belting baru (m/detik)",
+      gsmFormula: "Input GSM (cth: 0.22)",
+      kecepatanBeltingFormula: "Input Kecepatan (cth: 10.0)",
+      lebarKertasFormula: "Input Lebar (cth: 1.30)",
+      pulpConcentrationFormula: "cth: 0.17"
+    }
+  },
+  en:{
+    judulHalaman:"Combined Production Calculator",
+    tab0:"Production Time",tab1:"Finish Good Lifting Time",tab2:"Water Recycle",tab3:"New Flowrate", tab4:"Headbox Flowrate",
+    judul0:"Production Time Calculation",judul1:"Finish Good Lifting Time Calculation",judul2:"Water Recycle Calculation",judul3:"New Flowrate Calculation", judul4:"Headbox Flowrate Calculation",
+    btnPengangkatan:"Calculate End Time",hasilPengangkatan:"Production Ends: ",alert:"Please complete all required fields correctly.",
+    btnHitung:"Calculate Lifting Duration",hasilWaktuAngkat:"Lifting Duration: ",
+    btnAir:"Calculate Water Recycle",hasilAirRecycle:"Required Water: ",
+    btnFlowrate:"Calculate New Flowrate",hasilFlowrate:"Recommended Flow Rate: ",
+    btnFormulaZatPadat:"Calculate Headbox Flowrate", hasilFormulaZatPadat:"Headbox Flowrate: ",
+    optBahan0:"Select Material",
+    optBahanHeadbox0: "Select Material",
+    optBahanHeadboxBouyan: "Bouyan",
+    optBahanHeadboxCustom: "Custom",
+    lblBahanHeadbox: "Select Material:",
+    lblGsmFormulaHeadbox: "GSM:",
+    lblKecepatanBeltingFormulaHeadbox: "Belt Speed (m/sec):",
+    lblLebarKertasFormulaHeadbox: "Paper Width (meter):",
+    lblPulpConcentrationFormulaHeadbox: "Pulp Concentration (fraction):",
+    notifikasi: {
+        pesan: "The calculated production time has been reached!",
+        tutupButton: "Close"
+    },
+    placeholders:{
+      targetProduksi:"Target Output (e.g.: 1500)",beratBobbin:"Bobbin Weight (kg, e.g.: 15)",
+      jumlahPotongan:"Cuts/Bobbin (e.g.: 10)",waktuPengangkatan:"Lifting Time/Bobbin (min)",
+      tanggalMulai:"Start Date",jamMulai:"Start Time (e.g., 08:00)",
+      berat:"Roll Weight (kg), e.g.: 16",
+      gsm:"GSM (auto)", // Placeholder for GSM
+      pisau:"Cutter (auto)", // Placeholder for Cutter
+      speed:"Belt Speed (m/sec, e.g.: 10.20)",
+      jumlahRecycle:"Recycle Amount (kg, e.g.: 60)",moisture:"Moisture (fraction, e.g.: 0.93)",
+      konsentrasi:"Concentration (fraction, e.g.: 0.16)",
+      flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Initial belt speed (m/sec)",
+      kecepatanBaru:"New belt speed (m/sec)",
+      gsmFormula: "Enter GSM (e.g.: 0.22)",
+      kecepatanBeltingFormula: "Enter Speed (e.g.: 10.0)",
+      lebarKertasFormula: "Enter Width (e.g.: 1.30)",
+      pulpConcentrationFormula: "e.g.: 0.17"
+    }
+  },
+  zh:{
+    judulHalaman:"ç”Ÿäº§è®¡ç®—å™¨åˆé›†",
+    tab0:"ç”Ÿäº§æ—¶é—´",tab1:"æˆå“æå–æ—¶é—´",tab2:"å¾ªçŽ¯æ°´",tab3:"æ–°æµé€Ÿ", tab4:"ç½‘å‰ç®±æµé€Ÿ",
+    judul0:"ç”Ÿäº§æ—¶é—´è®¡ç®—",judul1:"æˆå“æå–æ—¶é—´è®¡ç®—",judul2:"å¾ªçŽ¯æ°´è®¡ç®—",judul3:"æ–°æµé€Ÿè®¡ç®—", judul4:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ",
+    btnPengangkatan:"è®¡ç®—ç»“æŸæ—¶é—´",hasilPengangkatan:"ç”Ÿäº§ç»“æŸäºŽï¼š",alert:"è¯·æ­£ç¡®å¡«å†™æ‰€æœ‰å¿…å¡«ä¿¡æ¯ã€‚",
+    btnHitung:"è®¡ç®—æå–æ—¶é•¿",hasilWaktuAngkat:"æå–æ—¶é•¿ï¼š",
+    btnAir:"è®¡ç®—å¾ªçŽ¯æ°´é‡",hasilAirRecycle:"æ‰€éœ€æ°´é‡ï¼š",
+    btnFlowrate:"è®¡ç®—æ–°æµé€Ÿ",hasilFlowrate:"å»ºè®®æµé€Ÿï¼š",
+    btnFormulaZatPadat:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ", hasilFormulaZatPadat:"ç½‘å‰ç®±æµé€Ÿï¼š",
+    optBahan0:"é€‰æ‹©ææ–™",
+    optBahanHeadbox0: "é€‰æ‹©ææ–™",
+    optBahanHeadboxBouyan: "Bouyan",
+    optBahanHeadboxCustom: "è‡ªå®šä¹‰",
+    lblBahanHeadbox: "é€‰æ‹©ææ–™:",
+    lblGsmFormulaHeadbox: "å…‹é‡:",
+    lblKecepatanBeltingFormulaHeadbox: "çš®å¸¦é€Ÿåº¦ (ç±³/ç§’):",
+    lblLebarKertasFormulaHeadbox: "çº¸å¼ å®½åº¦ (ç±³):",
+    lblPulpConcentrationFormulaHeadbox: "çº¸æµ†æµ“åº¦ (å°æ•°):",
+    notifikasi: {
+        pesan: "è®¡ç®—çš„ç”Ÿäº§æ—¶é—´å·²åˆ°ï¼",
+        tutupButton: "å…³é—­"
+    },
+    placeholders:{
+      targetProduksi:"ç›®æ ‡äº§é‡ï¼ˆä¾‹å¦‚ï¼š1500ï¼‰",beratBobbin:"ç­’é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š15ï¼‰",
+      jumlahPotongan:"æ¯ç­’åˆ‡å‰²æ•°ï¼ˆä¾‹å¦‚ï¼š10ï¼‰",waktuPengangkatan:"æ¯ç­’æå‡æ—¶é—´ï¼ˆåˆ†é’Ÿï¼‰",
+      tanggalMulai:"å¼€å§‹æ—¥æœŸ",jamMulai:"å¼€å§‹æ—¶é—´ï¼ˆä¾‹å¦‚ï¼š08:00ï¼‰",
+      berat:"å·é‡ï¼ˆå…¬æ–¤ï¼‰ï¼Œä¾‹å¦‚ï¼š16",
+      gsm:"å…‹é‡ï¼ˆè‡ªåŠ¨ï¼‰", // Placeholder for GSM
+      pisau:"åˆ€å…·ï¼ˆè‡ªåŠ¨ï¼‰", // Placeholder for Cutter
+      speed:"çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼Œä¾‹å¦‚ï¼š10.20ï¼‰",
+      jumlahRecycle:"å¾ªçŽ¯æ•°é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š60ï¼‰",moisture:"æ°´åˆ†ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.93ï¼‰",
+      konsentrasi:"æµ“åº¦ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.16ï¼‰",
+      flowAwal:"åˆå§‹æµé€Ÿï¼ˆå‡/å°æ—¶ï¼Œä¾‹å¦‚ï¼š100ï¼‰",kecepatanAwal:"å½“å‰çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰",
+      kecepatanBaru:"æœ€æ–°çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰",
+      gsmFormula: "è¾“å…¥å…‹é‡ (ä¾‹å¦‚: 0.22)",
+      kecepatanBeltingFormula: "è¾“å…¥é€Ÿåº¦ (ä¾‹å¦‚: 10.0)",
+      lebarKertasFormula: "è¾“å…¥å®½åº¦ (ä¾‹å¦‚: 1.30)",
+      pulpConcentrationFormula: "ä¾‹å¦‚ï¼š0.17"
+    }
+  }
+};
+
+function setText(elementId, textContent) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.innerText = textContent !== undefined ? textContent : `{${elementId}}`;
+    } else {
+        console.warn(`Element with ID '${elementId}' not found for setText.`);
+    }
+}
+
+function setPlaceholder(elementId, placeholderText) {
+    const el = document.getElementById(elementId);
+    // console.log(`Setting placeholder for ID: ${elementId}, Text: "${placeholderText}", Element found: ${!!el}`); // Untuk debugging
+    if (el && el.tagName === "INPUT") {
+        if (el.readOnly) {
+            el.placeholder = ""; // Kosongkan placeholder untuk input readonly
+        } else {
+            el.placeholder = placeholderText !== undefined ? placeholderText : "";
+        }
+    } else if (!el && elementId) {
+        console.warn(`Element with ID '${elementId}' not found for setPlaceholder.`);
+    }
+}
+
+
+function ubahBahasa(){
+  const lang=document.getElementById("language").value;
+  const t=teks[lang];
+
+  if (!t) {
+    console.error("Language data not found for:", lang);
+    return;
+  }
+
+  setText("judulHalaman", t.judulHalaman);
+  ["tab0","tab1","tab2","tab3","tab4"].forEach((id,i)=>setText(id, t["tab"+i]));
+  ["judul0","judul1","judul2","judul3","judul4"].forEach((id,i)=>setText(id, t["judul"+i]));
+  
+  setText("btnPengangkatan", t.btnPengangkatan);
+  setText("hasilPengangkatan", t.hasilPengangkatan); // Hanya prefix
+  setText("btnHitung", t.btnHitung);
+  setText("hasilWaktuAngkat", t.hasilWaktuAngkat); // Hanya prefix
+  setText("btnAir", t.btnAir);
+  setText("hasilAirRecycle", t.hasilAirRecycle); // Hanya prefix
+  setText("btnFlowrate", t.btnFlowrate);
+  setText("hasilFlowrate", t.hasilFlowrate); // Hanya prefix
+  setText("btnFormulaZatPadat", t.btnFormulaZatPadat);
+  setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat); // Hanya prefix
+
+
+  setText("optBahan0", t.optBahan0); 
+  
+  setText("lblBahanHeadbox", t.lblBahanHeadbox);
+  setText("optBahanHeadbox0", t.optBahanHeadbox0);
+  setText("optBahanHeadboxBouyan", t.optBahanHeadboxBouyan);
+  setText("optBahanHeadboxCustom", t.optBahanHeadboxCustom);
+  setText("lblGsmFormulaHeadbox", t.lblGsmFormulaHeadbox);
+  setText("lblKecepatanBeltingFormulaHeadbox", t.lblKecepatanBeltingFormulaHeadbox);
+  setText("lblLebarKertasFormulaHeadbox", t.lblLebarKertasFormulaHeadbox);
+  setText("lblPulpConcentrationFormulaHeadbox", t.lblPulpConcentrationFormulaHeadbox);
+  
+  setPlaceholder("targetProduksi", t.placeholders.targetProduksi);
+  setPlaceholder("beratBobbin", t.placeholders.beratBobbin);
+  setPlaceholder("jumlahPotongan", t.placeholders.jumlahPotongan);
+  setPlaceholder("waktuPengangkatan", t.placeholders.waktuPengangkatan);
+  // tanggalMulai tidak butuh placeholder karena type="date"
+  setPlaceholder("jamMulai", t.placeholders.jamMulai);
+  setPlaceholder("berat", t.placeholders.berat);
+  setPlaceholder("speed", t.placeholders.speed);
+  setPlaceholder("jumlahRecycle", t.placeholders.jumlahRecycle);
+  setPlaceholder("moisture", t.placeholders.moisture);
+  setPlaceholder("konsentrasi", t.placeholders.konsentrasi);
+  setPlaceholder("flowAwal", t.placeholders.flowAwal);
+  setPlaceholder("kecepatanAwal", t.placeholders.kecepatanAwal);
+  setPlaceholder("kecepatanBaru", t.placeholders.kecepatanBaru);
+  
+  // Placeholder untuk input yang bergantung material
+  setPlaceholder("gsm", t.placeholders.gsm);
+  setPlaceholder("pisau", t.placeholders.pisau);
+  setPlaceholder("gsmFormula", t.placeholders.gsmFormula);
+  setPlaceholder("kecepatanBeltingFormula", t.placeholders.kecepatanBeltingFormula);
+  setPlaceholder("lebarKertasFormula", t.placeholders.lebarKertasFormula);
+  setPlaceholder("pulpConcentrationFormula", t.placeholders.pulpConcentrationFormula);
+
+  // Panggil fungsi atur ulang untuk memastikan readonly dan visibilitas sesuai,
+  // TAPI nilai input tidak diubah kecuali memang seharusnya (misal dari dropdown material)
+  // Untuk input gsm dan pisau (Tab 1), status readonly dan nilainya diatur oleh aturGSMdanPisau()
+  // yang dipanggil saat #bahan berubah atau saat load.
+  // Untuk input di Tab 4, status readonly dan nilainya diatur oleh aturInputHeadbox()
+  // yang dipanggil saat #bahanHeadbox berubah atau saat load.
+  // Kita tidak memanggil aturGSMdanPisau() dan aturInputHeadbox() di sini lagi.
+
+  // Jika hasil perhitungan sudah ada, perbarui juga teks hasil dengan prefix bahasa baru
+  const hasilPengangkatanEl = document.getElementById("hasilPengangkatan");
+  if (hasilPengangkatanEl.innerText !== t.hasilPengangkatan && hasilPengangkatanEl.innerText.includes(": ")) {
+      const value = hasilPengangkatanEl.innerText.split(": ")[1];
+      hasilPengangkatanEl.innerText = t.hasilPengangkatan + value;
+  }
+  const hasilWaktuAngkatEl = document.getElementById("hasilWaktuAngkat");
   
