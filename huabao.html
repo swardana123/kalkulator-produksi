@@ -111,7 +111,7 @@
     <input id="waktuPengangkatan" type="number" placeholder="Waktu Angkat/Bobbin (menit)"/>
     <input id="tanggalMulai" type="date" />
     <input id="jamMulai" type="time" placeholder="Jam Mulai (misal: 08:00)"/>
-    <button onclick="hitungWaktuPengangkatan()" id="btnPengangkatan">Hitung Waktu Selesai</button>
+    <button id="btnPengangkatan" onclick="hitungWaktuPengangkatan()">Hitung Waktu Selesai</button>
     <div class="hasil" id="hasilPengangkatan">Waktu Selesai Produksi: </div>
   </div>
 
@@ -127,7 +127,7 @@
     <input class="hidden" id="gsm" type="number" readonly placeholder="GSM (otomatis)"/>
     <input class="hidden" id="pisau" type="number" readonly placeholder="Pisau (otomatis)"/>
     <input id="speed" type="number" placeholder="Kecepatan Belting (m/detik, cth: 10.20)"/>
-    <button onclick="hitungWaktuAngkat()" id="btnHitung">Hitung Durasi Angkat</button>
+    <button id="btnHitung" onclick="hitungWaktuAngkat()">Hitung Durasi Angkat</button>
     <div class="hasil" id="hasilWaktuAngkat">Durasi Angkat: </div>
   </div>
 
@@ -136,7 +136,7 @@
     <input id="jumlahRecycle" type="number" placeholder="Jumlah Recycle (kg, cth:60)"/>
     <input id="moisture" type="number" step="any" placeholder="Moisture (fraksi, cth:0.93)"/>
     <input id="konsentrasi" type="number" step="any" placeholder="Konsentrasi (fraksi, cth:0.16)"/>
-    <button onclick="hitungAirRecycle()" id="btnAir">Hitung Air Recycle</button>
+    <button id="btnAir" onclick="hitungAirRecycle()">Hitung Air Recycle</button>
     <div class="hasil" id="hasilAirRecycle">Jumlah Air yang Diperlukan: </div>
   </div>
 
@@ -145,7 +145,7 @@
     <input id="flowAwal" type="number" step="any" placeholder="Flow rate awal (L/jam, cth:100)"/>
     <input id="kecepatanAwal" type="number" step="any" placeholder="Kecepatan belting awal (m/detik)"/>
     <input id="kecepatanBaru" type="number" step="any" placeholder="Kecepatan belting baru (m/detik)"/>
-    <button onclick="hitungFlowrateBaru()" id="btnFlowrate">Hitung Flowrate Baru</button>
+    <button id="btnFlowrate" onclick="hitungFlowrateBaru()">Hitung Flowrate Baru</button>
     <div class="hasil" id="hasilFlowrate">Laju Aliran Disarankan: </div>
   </div>
 
@@ -170,14 +170,14 @@
     <label for="pulpConcentrationFormula" id="lblPulpConcentrationFormulaHeadbox">Konsentrasi Pulp (fraksi):</label>
     <input id="pulpConcentrationFormula" type="number" step="any" placeholder="cth: 0.17"/>
 
-    <button onclick="hitungFormulaHeadbox()" id="btnFormulaZatPadat">Hitung Flowrate Headbox</button>
+    <button id="btnFormulaZatPadat" onclick="hitungFormulaHeadbox()">Hitung Flowrate Headbox</button>
     <div class="hasil" id="hasilFormulaZatPadat">Flowrate Headbox: </div>
   </div>
 
   <div id="tab-5" class="content">
     <h2 id="judul5">Tanya AI</h2>
     <textarea id="pertanyaanAI" placeholder="Masukkan pertanyaan Anda tentang produksi..."></textarea>
-    <button onclick="tanyaAI()" id="btnTanyaAI">Tanya AI</button>
+    <button id="btnTanyaAI" onclick="tanyaAI()">Tanya AI</button>
     <div class="hasil" id="hasilTanyaAI">Jawaban AI: </div>
   </div>
 
@@ -223,7 +223,5 @@ const teks = {
       targetProduksi:"Target Produksi (cth: 1500)",beratBobbin:"Berat Bobbin (kg, cth: 15)",
       jumlahPotongan:"Potongan/Bobbin (cth: 10)",waktuPengangkatan:"Waktu Angkat/Bobbin (menit)",
       tanggalMulai:"Tanggal Mulai",jamMulai:"Jam Mulai (misal: 08:00)",
-      berat:"Berat Roll (kg), cth: 16",
-      gsm:"GSM (otomatis)", // Placeholder untuk GSM
-      pisau:"Pisau (otomatis)", // Placeholder untuk Pisau
-      speed:"Kecepatan Belting (m/
+      berat:"Berat
+  
