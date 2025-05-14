@@ -64,7 +64,16 @@
         margin: 0;
         width: auto;
     }
-  </style>
+  
+pre#responseAreaGroq {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+</style>
 </head>
 <body>
   <div class="header">
@@ -72,7 +81,7 @@
     <select id="language" onchange="ubahBahasa()">
       <option value="id">Bahasa Indonesia</option>
       <option value="en">English</option>
-      <option value="zh">中文 (Mandarin)</option>
+      <option value="zh">ä¸­æ–‡ (Mandarin)</option>
     </select>
     <h1 id="judulHalaman">Gabungan Kalkulator Produksi</h1>
   </div>
@@ -83,6 +92,7 @@
     <div class="tab" onclick="showTab(2)" id="tab2">Air Recycle</div>
     <div class="tab" onclick="showTab(3)" id="tab3">Flowrate Baru</div>
     <div class="tab" onclick="showTab(4)" id="tab4">Flowrate Headbox</div>
+    <div class="tab" onclick="showTab(5)" id="tab5">Chat AI Groq</div>
   </div>
 
   <div id="tab-0" class="content active">
@@ -154,7 +164,16 @@
     <div class="hasil" id="hasilFormulaZatPadat">Flowrate Headbox: </div>
   </div>
 
-  <div id="notifikasiSelesaiPopup" class="notifikasi-popup">
+  
+<div id="tab-5" class="content">
+  <h2>Chat dengan AI Groq (LLaMA 3)</h2>
+  <textarea id="inputTextGroq" rows="5" placeholder="Tulis pertanyaan Anda di sini..."></textarea><br>
+  <button onclick="sendToGroq()">Kirim</button>
+  <h3>Jawaban AI:</h3>
+  <pre id="responseAreaGroq">Belum ada jawaban.</pre>
+</div>
+
+<div id="notifikasiSelesaiPopup" class="notifikasi-popup">
     <span id="teksNotifikasiSelesai"></span>
     <button id="btnTutupNotifikasi" onclick="tutupNotifikasiSelesai()">Tutup</button>
   </div>
@@ -210,25 +229,25 @@ const teks = {
     }
   },
   zh:{
-    judulHalaman:"生产计算器合集",
-    tab0:"生产时间",tab1:"成品提取时间",tab2:"循环水",tab3:"新流速", tab4:"网前箱流速",
-    judul0:"生产时间计算",judul1:"成品提取时间计算",judul2:"循环水计算",judul3:"新流速计算", judul4:"计算网前箱流速",
-    btnPengangkatan:"计算结束时间",hasilPengangkatan:"生产结束于：",alert:"请正确填写所有必填信息。",
-    btnHitung:"计算提取时长",hasilWaktuAngkat:"提取时长：",
-    btnAir:"计算循环水量",hasilAirRecycle:"所需水量：",
-    btnFlowrate:"计算新流速",hasilFlowrate:"建议流速：",
-    btnFormulaZatPadat:"计算网前箱流速", hasilFormulaZatPadat:"网前箱流速：",
-    optBahan0:"选择材料",
-    optBahanHeadbox0: "选择材料", optBahanHeadboxBouyan: "Bouyan", optBahanHeadboxCustom: "自定义",
-    lblBahanHeadbox: "选择材料:", lblGsmFormulaHeadbox: "克重:", lblKecepatanBeltingFormulaHeadbox: "皮带速度 (米/秒):", lblLebarKertasFormulaHeadbox: "纸张宽度 (米):", lblPulpConcentrationFormulaHeadbox: "纸浆浓度 (小数):",
-    notifikasi: { pesan: "计算的生产时间已到！", tutupButton: "关闭" },
+    judulHalaman:"ç”Ÿäº§è®¡ç®—å™¨åˆé›†",
+    tab0:"ç”Ÿäº§æ—¶é—´",tab1:"æˆå“æå–æ—¶é—´",tab2:"å¾ªçŽ¯æ°´",tab3:"æ–°æµé€Ÿ", tab4:"ç½‘å‰ç®±æµé€Ÿ",
+    judul0:"ç”Ÿäº§æ—¶é—´è®¡ç®—",judul1:"æˆå“æå–æ—¶é—´è®¡ç®—",judul2:"å¾ªçŽ¯æ°´è®¡ç®—",judul3:"æ–°æµé€Ÿè®¡ç®—", judul4:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ",
+    btnPengangkatan:"è®¡ç®—ç»“æŸæ—¶é—´",hasilPengangkatan:"ç”Ÿäº§ç»“æŸäºŽï¼š",alert:"è¯·æ­£ç¡®å¡«å†™æ‰€æœ‰å¿…å¡«ä¿¡æ¯ã€‚",
+    btnHitung:"è®¡ç®—æå–æ—¶é•¿",hasilWaktuAngkat:"æå–æ—¶é•¿ï¼š",
+    btnAir:"è®¡ç®—å¾ªçŽ¯æ°´é‡",hasilAirRecycle:"æ‰€éœ€æ°´é‡ï¼š",
+    btnFlowrate:"è®¡ç®—æ–°æµé€Ÿ",hasilFlowrate:"å»ºè®®æµé€Ÿï¼š",
+    btnFormulaZatPadat:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ", hasilFormulaZatPadat:"ç½‘å‰ç®±æµé€Ÿï¼š",
+    optBahan0:"é€‰æ‹©ææ–™",
+    optBahanHeadbox0: "é€‰æ‹©ææ–™", optBahanHeadboxBouyan: "Bouyan", optBahanHeadboxCustom: "è‡ªå®šä¹‰",
+    lblBahanHeadbox: "é€‰æ‹©ææ–™:", lblGsmFormulaHeadbox: "å…‹é‡:", lblKecepatanBeltingFormulaHeadbox: "çš®å¸¦é€Ÿåº¦ (ç±³/ç§’):", lblLebarKertasFormulaHeadbox: "çº¸å¼ å®½åº¦ (ç±³):", lblPulpConcentrationFormulaHeadbox: "çº¸æµ†æµ“åº¦ (å°æ•°):",
+    notifikasi: { pesan: "è®¡ç®—çš„ç”Ÿäº§æ—¶é—´å·²åˆ°ï¼", tutupButton: "å…³é—­" },
     placeholders:{
-      targetProduksi:"目标产量（例如：1500）",beratBobbin:"筒重（公斤，例如：15）", jumlahPotongan:"每筒切割数（例如：10）",waktuPengangkatan:"每筒提升时间（分钟）",
-      tanggalMulai:"开始日期",jamMulai:"开始时间（例如：08:00）",
-      berat:"卷重（公斤），例如：16", gsm:"克重（自动）", pisau:"刀具（自动）", speed:"皮带速度（米/秒，例如：10.20）",
-      jumlahRecycle:"循环数量（公斤，例如：60）",moisture:"水分（小数，例如：0.93）", konsentrasi:"浓度（小数，例如：0.16）",
-      flowAwal:"初始流速（升/小时，例如：100）",kecepatanAwal:"当前皮带速度（米/秒）", kecepatanBaru:"最新皮带速度（米/秒）",
-      gsmFormula: "输入克重 (例如: 0.22)", kecepatanBeltingFormula: "输入速度 (例如: 10.0)", lebarKertasFormula: "输入宽度 (例如: 1.30)", pulpConcentrationFormula: "例如：0.17"
+      targetProduksi:"ç›®æ ‡äº§é‡ï¼ˆä¾‹å¦‚ï¼š1500ï¼‰",beratBobbin:"ç­’é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š15ï¼‰", jumlahPotongan:"æ¯ç­’åˆ‡å‰²æ•°ï¼ˆä¾‹å¦‚ï¼š10ï¼‰",waktuPengangkatan:"æ¯ç­’æå‡æ—¶é—´ï¼ˆåˆ†é’Ÿï¼‰",
+      tanggalMulai:"å¼€å§‹æ—¥æœŸ",jamMulai:"å¼€å§‹æ—¶é—´ï¼ˆä¾‹å¦‚ï¼š08:00ï¼‰",
+      berat:"å·é‡ï¼ˆå…¬æ–¤ï¼‰ï¼Œä¾‹å¦‚ï¼š16", gsm:"å…‹é‡ï¼ˆè‡ªåŠ¨ï¼‰", pisau:"åˆ€å…·ï¼ˆè‡ªåŠ¨ï¼‰", speed:"çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼Œä¾‹å¦‚ï¼š10.20ï¼‰",
+      jumlahRecycle:"å¾ªçŽ¯æ•°é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š60ï¼‰",moisture:"æ°´åˆ†ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.93ï¼‰", konsentrasi:"æµ“åº¦ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.16ï¼‰",
+      flowAwal:"åˆå§‹æµé€Ÿï¼ˆå‡/å°æ—¶ï¼Œä¾‹å¦‚ï¼š100ï¼‰",kecepatanAwal:"å½“å‰çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰", kecepatanBaru:"æœ€æ–°çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰",
+      gsmFormula: "è¾“å…¥å…‹é‡ (ä¾‹å¦‚: 0.22)", kecepatanBeltingFormula: "è¾“å…¥é€Ÿåº¦ (ä¾‹å¦‚: 10.0)", lebarKertasFormula: "è¾“å…¥å®½åº¦ (ä¾‹å¦‚: 1.30)", pulpConcentrationFormula: "ä¾‹å¦‚ï¼š0.17"
     }
   }
 };
@@ -437,7 +456,7 @@ function hitungWaktuAngkat(){
     return;
   }
   const dur=berat/(gsm*pis*speed);
-  setText("hasilWaktuAngkat",t.hasilWaktuAngkat+dur.toFixed(2)+(lang==="zh"?" 秒":lang==="en"?" seconds":" detik"));
+  setText("hasilWaktuAngkat",t.hasilWaktuAngkat+dur.toFixed(2)+(lang==="zh"?" ç§’":lang==="en"?" seconds":" detik"));
 }
 
 function hitungAirRecycle(){
@@ -558,6 +577,36 @@ window.onload = function() {
     ubahBahasa(); 
     tutupNotifikasiSelesai();
 };
+
+async function sendToGroq() {
+  const input = document.getElementById('inputTextGroq').value;
+  const responseArea = document.getElementById('responseAreaGroq');
+  responseArea.textContent = 'Sedang memproses...';
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer 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'
+      },
+      body: JSON.stringify({
+        model: "llama3-8b-8192",
+        messages: [
+          { role: "system", content: "Kamu adalah asisten AI yang ramah dan membantu." },
+          { role: "user", content: input }
+        ]
+      })
+    });
+
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || 'Tidak ada respons dari AI.';
+    responseArea.textContent = reply;
+  } catch (error) {
+    responseArea.textContent = 'Terjadi kesalahan: ' + error.message;
+  }
+}
+
 </script>
 </body>
 </html>
