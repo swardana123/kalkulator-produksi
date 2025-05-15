@@ -5,35 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kalkulator Produksi Lengkap</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(to bottom right, #e3f2fd, #ffffff); margin:0; padding:10px; color:#333; }
-    .header { display:flex; flex-direction:column; gap:10px; align-items:center; margin-bottom:20px; }
-    .header img { max-width: 100px; height: auto; margin-bottom: 5px; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ background: linear-gradient(to bottom right, #e3f2fd, #ffffff); margin:0; padding:10px; color:#333; }
+    .header { display:flex; flex-direction:column; gap:10px; align-items:center; margin-bottom:20px;
+ }
+    .header img { max-width: 100px; height: auto; margin-bottom: 5px;
+      mix-blend-mode: multiply; /* Coba nilai lain seperti: screen, overlay, darken, lighten, dll. */
+ }
     .header h1 { font-size:1.5rem; text-align:center; margin-top: 0; margin-bottom: 5px; }
-    select { padding:8px; font-size:1rem; border-radius:6px; border:1px solid #ccc; }
-    .tab-container { display:flex; flex-wrap: wrap; margin-bottom:10px; border-radius:8px; overflow:hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .tab { flex:1; min-width: 150px; padding:10px; background-color:#eee; text-align:center; cursor:pointer; transition:background-color .3s; font-size:.90rem; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;}
-    .tab:last-child { border-right: none; }
+    select { padding:8px;
+ font-size:1rem; border-radius:6px; border:1px solid #ccc; }
+    .tab-container { display:flex; flex-wrap: wrap; margin-bottom:10px; border-radius:8px; overflow:hidden;
+ box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .tab { flex:1; min-width: 150px; padding:10px; background-color:#eee; text-align:center; cursor:pointer; transition:background-color .3s;
+ font-size:.90rem; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;}
+    .tab:last-child { border-right: none;
+ }
     .tab.active { background-color:#2196F3; color:white; font-weight:bold; border-bottom-color: #2196F3; }
-    .content { display:none; background:white; padding:15px; border-radius:0 0 8px 8px; box-shadow:0 2px 10px rgba(0,0,0,.1); animation: fadeIn 0.5s; margin-top:-1px; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .content { display:none; background:white; padding:15px;
+ border-radius:0 0 8px 8px; box-shadow:0 2px 10px rgba(0,0,0,.1); animation: fadeIn 0.5s; margin-top:-1px;
+ }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1;
+ } }
     .content.active { display:block; }
-    input, select, button { width:100%; max-width:400px; padding:10px; margin:8px 0; font-size:1rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
-    label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9rem; color: #555;}
-    button { background-color:#2196F3; color:white; border:none; cursor:pointer; transition: background-color 0.3s; }
+    input, select, button { width:100%; max-width:400px; padding:10px;
+ margin:8px 0; font-size:1rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
+    label { display: block; margin-top: 10px; font-weight: bold;
+ font-size: 0.9rem; color: #555;}
+    button { background-color:#2196F3; color:white; border:none; cursor:pointer; transition: background-color 0.3s;
+ }
     button:hover { background-color:#1976D2; }
-    .hasil { margin-top:10px; padding: 10px; background-color: #e8f5e9; border-left: 5px solid #4CAF50; font-weight:bold; color:#2E7D32; border-radius: 4px; }
-    .hidden { display:none !important; }
+    .hasil { margin-top:10px; padding: 10px; background-color: #e8f5e9;
+ border-left: 5px solid #4CAF50; font-weight:bold; color:#2E7D32; border-radius: 4px; }
+    .hidden { display:none !important;
+ }
     input[readonly] {
         background-color: #e9ecef;
         color: #495057;
         cursor: not-allowed;
-    }
-    h2 { margin-top: 0; color: #1976D2; }
+ }
+    h2 { margin-top: 0; color: #1976D2;
+ }
     .notifikasi-popup {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        padding: 15px 20px;
+ padding: 15px 20px;
         background-color: #4CAF50;
         color: white;
         border-radius: 8px;
@@ -41,21 +58,21 @@
         z-index: 1000;
         display: flex;
         align-items: center;
-        gap: 15px;
+ gap: 15px;
         transition: opacity 0.5s, transform 0.5s;
         opacity: 0;
         transform: translateY(100px);
         pointer-events: none;
-    }
+ }
     .notifikasi-popup.show {
         opacity: 1;
         transform: translateY(0);
         pointer-events: auto;
-    }
+ }
     .notifikasi-popup button {
         background-color: white;
         color: #4CAF50;
-        border: 1px solid #4CAF50;
+ border: 1px solid #4CAF50;
         padding: 5px 10px;
         border-radius: 4px;
         cursor: pointer;
@@ -63,15 +80,15 @@
         max-width: 100px;
         margin: 0;
         width: auto;
-    }
-  
+ }
+
 pre#responseAreaGroq {
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
   overflow-x: auto;
-}
+ }
 
 </style>
 </head>
@@ -81,7 +98,7 @@ pre#responseAreaGroq {
     <select id="language" onchange="ubahBahasa()">
       <option value="id">Bahasa Indonesia</option>
       <option value="en">English</option>
-      <option value="zh">ä¸­æ–‡ (Mandarin)</option>
+      <option value="zh">中文 (Mandarin)</option>
     </select>
     <h1 id="judulHalaman">Gabungan Kalkulator Produksi</h1>
   </div>
@@ -92,6 +109,7 @@ pre#responseAreaGroq {
     <div class="tab" onclick="showTab(2)" id="tab2">Air Recycle</div>
     <div class="tab" onclick="showTab(3)" id="tab3">Flowrate Baru</div>
     <div class="tab" onclick="showTab(4)" id="tab4">Flowrate Headbox</div>
+
     <div class="tab" onclick="showTab(5)" id="tab5">AI Huabao</div>
   </div>
 
@@ -109,7 +127,8 @@ pre#responseAreaGroq {
 
   <div id="tab-1" class="content">
     <h2 id="judul1">Perhitungan Waktu Angkat Finish Good</h2>
-    <input id="berat" type="number" />
+    <input 
+ id="berat" type="number" />
     <select id="bahan" onchange="aturGSMdanPisau()">
       <option id="optBahan0" value="">Pilih Bahan</option>
       <option id="optBahan1" value="Bouyan">Bouyan</option>
@@ -124,7 +143,8 @@ pre#responseAreaGroq {
   <div id="tab-2" class="content">
     <h2 id="judul2">Perhitungan Air Recycle</h2>
     <input id="jumlahRecycle" type="number" />
-    <input id="moisture" type="number" step="any" />
+
+   <input id="moisture" type="number" step="any" />
     <input id="konsentrasi" type="number" step="any" />
     <button onclick="hitungAirRecycle()" id="btnAir">Hitung Air Recycle</button>
     <div class="hasil" id="hasilAirRecycle">Jumlah Air yang Diperlukan: </div>
@@ -141,33 +161,36 @@ pre#responseAreaGroq {
 
   <div id="tab-4" class="content">
     <h2 id="judul4">Mencari Flow rate Headbox</h2>
+
     <label for="bahanHeadbox" id="lblBahanHeadbox">Pilih Material:</label>
     <select id="bahanHeadbox" onchange="aturInputHeadbox()">
       <option id="optBahanHeadbox0" value="">Pilih Material</option>
       <option id="optBahanHeadboxBouyan" value="Bouyan">Bouyan</option>
       <option id="optBahanHeadboxCustom" value="Custom">Custom</option>
     </select>
-    
+
     <label for="gsmFormula" id="lblGsmFormulaHeadbox">GSM:</label>
     <input id="gsmFormula" type="number" step="any"/>
-    
+
     <label for="kecepatanBeltingFormula" id="lblKecepatanBeltingFormulaHeadbox">Kecepatan Belting (m/detik):</label>
     <input id="kecepatanBeltingFormula" type="number" step="any"/>
-    
+
     <label for="lebarKertasFormula" id="lblLebarKertasFormulaHeadbox">Lebar Kertas (meter):</label>
     <input id="lebarKertasFormula" type="number" step="any"/>
-    
+
+
     <label for="pulpConcentrationFormula" id="lblPulpConcentrationFormulaHeadbox">Konsentrasi Pulp (fraksi):</label>
     <input id="pulpConcentrationFormula" type="number" step="any"/>
-    
+
     <button onclick="hitungFormulaHeadbox()" id="btnFormulaZatPadat">Hitung Flowrate Headbox</button>
     <div class="hasil" id="hasilFormulaZatPadat">Flowrate Headbox: </div>
   </div>
 
-  
+
 <div id="tab-5" class="content">
   <h2>Chat dengan Huabao Assisten</h2>
-  <textarea id="inputTextGroq" rows="5" style="width: 100%; max-width: 700px;" placeholder="Tulis pertanyaan Anda di sini..."></textarea><br>
+  <textarea id="inputTextGroq" rows="5" style="width: 100%;
+ max-width: 700px;" placeholder="Tulis pertanyaan Anda di sini..."></textarea><br>
   <button onclick="sendToGroq()">Kirim</button>
   <h3>Jawaban AI:</h3>
   <pre id="responseAreaGroq">Belum ada jawaban.</pre>
@@ -189,7 +212,8 @@ const teks = {
     tab0:"Hitung Waktu Produksi",tab1:"Waktu Angkat Finish Good",tab2:"Air Recycle",tab3:"Flowrate Baru", tab4:"Flowrate Headbox",
     judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru", judul4:"Mencari Flow rate Headbox",
     btnPengangkatan:"Hitung Waktu Selesai",hasilPengangkatan:"Waktu Selesai Produksi: ",alert:"Mohon lengkapi semua data yang diperlukan dengan benar.",
-    btnHitung:"Hitung Durasi Angkat",hasilWaktuAngkat:"Durasi Angkat: ",
+
+   btnHitung:"Hitung Durasi Angkat",hasilWaktuAngkat:"Durasi Angkat: ",
     btnAir:"Hitung Air Recycle",hasilAirRecycle:"Jumlah Air yang Diperlukan: ",
     btnFlowrate:"Hitung Flowrate Baru",hasilFlowrate:"Laju Aliran Disarankan: ",
     btnFormulaZatPadat:"Hitung Flowrate Headbox", hasilFormulaZatPadat:"Flowrate Headbox: ",
@@ -207,7 +231,8 @@ const teks = {
     }
   },
   en:{
-    judulHalaman:"Combined Production Calculator",
+
+  judulHalaman:"Combined Production Calculator",
     tab0:"Production Time",tab1:"Finish Good Lifting Time",tab2:"Water Recycle",tab3:"New Flowrate", tab4:"Headbox Flowrate",
     judul0:"Production Time Calculation",judul1:"Finish Good Lifting Time Calculation",judul2:"Water Recycle Calculation",judul3:"New Flowrate Calculation", judul4:"Headbox Flowrate Calculation",
     btnPengangkatan:"Calculate End Time",hasilPengangkatan:"Production Ends: ",alert:"Please complete all required fields correctly.",
@@ -224,67 +249,67 @@ const teks = {
       tanggalMulai:"Start Date",jamMulai:"Start Time (e.g., 08:00)",
       berat:"Roll Weight (kg), e.g.: 16", gsm:"GSM (auto)", pisau:"Cutter (auto)", speed:"Belt Speed (m/sec, e.g.: 10.20)",
       jumlahRecycle:"Recycle Amount (kg, e.g.: 60)",moisture:"Moisture (fraction, e.g.: 0.93)", konsentrasi:"Concentration (fraction, e.g.: 0.16)",
-      flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Initial belt speed (m/sec)", kecepatanBaru:"New belt speed (m/sec)",
+
+     flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Initial belt speed (m/sec)", kecepatanBaru:"New belt speed (m/sec)",
       gsmFormula: "Enter GSM (e.g.: 0.22)", kecepatanBeltingFormula: "Enter Speed (e.g.: 10.0)", lebarKertasFormula: "Enter Width (e.g.: 1.30)", pulpConcentrationFormula: "e.g.: 0.17"
     }
   },
   zh:{
-    judulHalaman:"ç”Ÿäº§è®¡ç®—å™¨åˆé›†",
-    tab0:"ç”Ÿäº§æ—¶é—´",tab1:"æˆå“æå–æ—¶é—´",tab2:"å¾ªçŽ¯æ°´",tab3:"æ–°æµé€Ÿ", tab4:"ç½‘å‰ç®±æµé€Ÿ",
-    judul0:"ç”Ÿäº§æ—¶é—´è®¡ç®—",judul1:"æˆå“æå–æ—¶é—´è®¡ç®—",judul2:"å¾ªçŽ¯æ°´è®¡ç®—",judul3:"æ–°æµé€Ÿè®¡ç®—", judul4:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ",
-    btnPengangkatan:"è®¡ç®—ç»“æŸæ—¶é—´",hasilPengangkatan:"ç”Ÿäº§ç»“æŸäºŽï¼š",alert:"è¯·æ­£ç¡®å¡«å†™æ‰€æœ‰å¿…å¡«ä¿¡æ¯ã€‚",
-    btnHitung:"è®¡ç®—æå–æ—¶é•¿",hasilWaktuAngkat:"æå–æ—¶é•¿ï¼š",
-    btnAir:"è®¡ç®—å¾ªçŽ¯æ°´é‡",hasilAirRecycle:"æ‰€éœ€æ°´é‡ï¼š",
-    btnFlowrate:"è®¡ç®—æ–°æµé€Ÿ",hasilFlowrate:"å»ºè®®æµé€Ÿï¼š",
-    btnFormulaZatPadat:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ", hasilFormulaZatPadat:"ç½‘å‰ç®±æµé€Ÿï¼š",
-    optBahan0:"é€‰æ‹©ææ–™",
-    optBahanHeadbox0: "é€‰æ‹©ææ–™", optBahanHeadboxBouyan: "Bouyan", optBahanHeadboxCustom: "è‡ªå®šä¹‰",
-    lblBahanHeadbox: "é€‰æ‹©ææ–™:", lblGsmFormulaHeadbox: "å…‹é‡:", lblKecepatanBeltingFormulaHeadbox: "çš®å¸¦é€Ÿåº¦ (ç±³/ç§’):", lblLebarKertasFormulaHeadbox: "çº¸å¼ å®½åº¦ (ç±³):", lblPulpConcentrationFormulaHeadbox: "çº¸æµ†æµ“åº¦ (å°æ•°):",
-    notifikasi: { pesan: "è®¡ç®—çš„ç”Ÿäº§æ—¶é—´å·²åˆ°ï¼", tutupButton: "å…³é—­" },
+    judulHalaman:"生产计算器合集",
+    tab0:"生产时间",tab1:"成品提取时间",tab2:"循环水",tab3:"新流速", tab4:"网前箱流速",
+    judul0:"生产时间计算",judul1:"成品提取时间计算",judul2:"循环水计算",judul3:"新流速计算", judul4:"计算网前箱流速",
+    btnPengangkatan:"计算结束时间",hasilPengangkatan:"生产结束于：",alert:"请正确填写所有必填信息。",
+    btnHitung:"计算提取时长",hasilWaktuAngkat:"提取时长：",
+    btnAir:"计算循环水量",hasilAirRecycle:"所需水量：",
+    btnFlowrate:"计算新流速",hasilFlowrate:"建议流速：",
+    btnFormulaZatPadat:"计算网前箱流速", hasilFormulaZatPadat:"网前箱流速：",
+    optBahan0:"选择材料",
+    optBahanHeadbox0: "选择材料", optBahanHeadboxBouyan: "Bouyan", optBahanHeadboxCustom: "自定义",
+    lblBahanHeadbox: "选择材料:", lblGsmFormulaHeadbox: "克重:", lblKecepatanBeltingFormulaHeadbox: "皮带速度 (米/秒):", lblLebarKertasFormulaHeadbox: "纸张宽度 (米):", lblPulpConcentrationFormulaHeadbox: "纸浆浓度 (小数):",
+    notifikasi: { pesan: "计算的生产时间已到！", tutupButton: "关闭" },
     placeholders:{
-      targetProduksi:"ç›®æ ‡äº§é‡ï¼ˆä¾‹å¦‚ï¼š1500ï¼‰",beratBobbin:"ç­’é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š15ï¼‰", jumlahPotongan:"æ¯ç­’åˆ‡å‰²æ•°ï¼ˆä¾‹å¦‚ï¼š10ï¼‰",waktuPengangkatan:"æ¯ç­’æå‡æ—¶é—´ï¼ˆåˆ†é’Ÿï¼‰",
-      tanggalMulai:"å¼€å§‹æ—¥æœŸ",jamMulai:"å¼€å§‹æ—¶é—´ï¼ˆä¾‹å¦‚ï¼š08:00ï¼‰",
-      berat:"å·é‡ï¼ˆå…¬æ–¤ï¼‰ï¼Œä¾‹å¦‚ï¼š16", gsm:"å…‹é‡ï¼ˆè‡ªåŠ¨ï¼‰", pisau:"åˆ€å…·ï¼ˆè‡ªåŠ¨ï¼‰", speed:"çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼Œä¾‹å¦‚ï¼š10.20ï¼‰",
-      jumlahRecycle:"å¾ªçŽ¯æ•°é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š60ï¼‰",moisture:"æ°´åˆ†ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.93ï¼‰", konsentrasi:"æµ“åº¦ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.16ï¼‰",
-      flowAwal:"åˆå§‹æµé€Ÿï¼ˆå‡/å°æ—¶ï¼Œä¾‹å¦‚ï¼š100ï¼‰",kecepatanAwal:"å½“å‰çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰", kecepatanBaru:"æœ€æ–°çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰",
-      gsmFormula: "è¾“å…¥å…‹é‡ (ä¾‹å¦‚: 0.22)", kecepatanBeltingFormula: "è¾“å…¥é€Ÿåº¦ (ä¾‹å¦‚: 10.0)", lebarKertasFormula: "è¾“å…¥å®½åº¦ (ä¾‹å¦‚: 1.30)", pulpConcentrationFormula: "ä¾‹å¦‚ï¼š0.17"
+      targetProduksi:"目标产量（例如：1500）",beratBobbin:"筒重（公斤，例如：15）", jumlahPotongan:"每筒切割数（例如：10）",waktuPengangkatan:"每筒提升时间（分钟）",
+      tanggalMulai:"开始日期",jamMulai:"开始时间（例如：08:00）",
+      berat:"卷重（公斤），例如：16", gsm:"克重（自动）", pisau:"刀具（自动）", speed:"皮带速度（米/秒，例如：10.20）",
+      jumlahRecycle:"循环数量（公斤，例如：60）",moisture:"水分（小数，例如：0.93）", konsentrasi:"浓度（小数，例如：0.16）",
+      flowAwal:"初始流速（升/小时，例如：100）",kecepatanAwal:"当前皮带速度（米/秒）", kecepatanBaru:"最新皮带速度（米/秒）",
+      gsmFormula: "输入克重 (例如: 0.22)", kecepatanBeltingFormula: "输入速度 (例如: 10.0)", lebarKertasFormula: "输入宽度 (例如: 1.30)", pulpConcentrationFormula: "例如：0.17"
     }
   }
 };
-
-function setText(elementId, textContent) {
+ function setText(elementId, textContent) {
     const el = document.getElementById(elementId);
-    if (el) {
+ if (el) {
         el.innerText = textContent !== undefined ? textContent : `{${elementId}}`;
-    } else {
+ } else {
         console.warn(`Element with ID '${elementId}' not found for setText.`);
-    }
+ }
 }
 
 function setPlaceholder(elementId, placeholderText) {
     const el = document.getElementById(elementId);
-    if (el && el.tagName === "INPUT" && !el.readOnly) {
-        el.placeholder = placeholderText !== undefined ? placeholderText : "";
+ if (el && el.tagName === "INPUT" && !el.readOnly) {
+        el.placeholder = placeholderText !== undefined ?
+ placeholderText : "";
     } else if (el && el.tagName === "INPUT" && el.readOnly) {
-        el.placeholder = ""; 
-    } else if (!el && elementId) {
+        el.placeholder = ""; // Clear placeholder for readonly inputs if desired, or keep specific text
+ } else if (!el && elementId) { // Only log warning if elementId was actually provided
         console.warn(`Element with ID '${elementId}' not found for setPlaceholder or it's not an INPUT.`);
-    }
+ }
 }
 
 function ubahBahasa(){
   const lang = document.getElementById("language").value;
   const t = teks[lang];
-
-  if (!t) {
+ if (!t) {
     console.error("Language data not found for:", lang);
     return;
   }
 
   setText("judulHalaman", t.judulHalaman);
   ["tab0","tab1","tab2","tab3","tab4"].forEach((id,i)=>setText(id, t["tab"+i]));
-  ["judul0","judul1","judul2","judul3","judul4"].forEach((id,i)=>setText(id, t["judul"+i]));
-  
+ ["judul0","judul1","judul2","judul3","judul4"].forEach((id,i)=>setText(id, t["judul"+i]));
+
   setText("btnPengangkatan", t.btnPengangkatan);
   setText("hasilPengangkatan", t.hasilPengangkatan);
   setText("btnHitung", t.btnHitung);
@@ -294,10 +319,10 @@ function ubahBahasa(){
   setText("btnFlowrate", t.btnFlowrate);
   setText("hasilFlowrate", t.hasilFlowrate);
   setText("btnFormulaZatPadat", t.btnFormulaZatPadat);
-  setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat);
+ setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat);
 
   setText("optBahan0", t.optBahan0);
-  
+
   setText("lblBahanHeadbox", t.lblBahanHeadbox);
   setText("optBahanHeadbox0", t.optBahanHeadbox0);
   setText("optBahanHeadboxBouyan", t.optBahanHeadboxBouyan);
@@ -306,45 +331,40 @@ function ubahBahasa(){
   setText("lblKecepatanBeltingFormulaHeadbox", t.lblKecepatanBeltingFormulaHeadbox);
   setText("lblLebarKertasFormulaHeadbox", t.lblLebarKertasFormulaHeadbox);
   setText("lblPulpConcentrationFormulaHeadbox", t.lblPulpConcentrationFormulaHeadbox);
-  
-  // --- Setting Placeholders ---
+ // --- Setting Placeholders ---
   // Tab 0: Production Time
   setPlaceholder("targetProduksi", t.placeholders.targetProduksi);
   setPlaceholder("beratBobbin", t.placeholders.beratBobbin);
   setPlaceholder("jumlahPotongan", t.placeholders.jumlahPotongan);
   setPlaceholder("waktuPengangkatan", t.placeholders.waktuPengangkatan);
-  setPlaceholder("tanggalMulai", t.placeholders.tanggalMulai); // For date input
-  setPlaceholder("jamMulai", t.placeholders.jamMulai);     // For time input
+ setPlaceholder("tanggalMulai", t.placeholders.tanggalMulai); 
+  setPlaceholder("jamMulai", t.placeholders.jamMulai);     
 
   // Tab 1: Finish Good Lifting Time
   setPlaceholder("berat", t.placeholders.berat);
-  setPlaceholder("speed", t.placeholders.speed);
+ setPlaceholder("speed", t.placeholders.speed);
   // gsm and pisau placeholders are handled in aturGSMdanPisau()
 
   // Tab 2: Water Recycle
   setPlaceholder("jumlahRecycle", t.placeholders.jumlahRecycle);
-  setPlaceholder("moisture", t.placeholders.moisture);
+ setPlaceholder("moisture", t.placeholders.moisture);
   setPlaceholder("konsentrasi", t.placeholders.konsentrasi);
 
   // Tab 3: New Flowrate
   setPlaceholder("flowAwal", t.placeholders.flowAwal);
   setPlaceholder("kecepatanAwal", t.placeholders.kecepatanAwal);
   setPlaceholder("kecepatanBaru", t.placeholders.kecepatanBaru);
-  
-  // Tab 4: Headbox Flowrate
-  // gsmFormula, kecepatanBeltingFormula, lebarKertasFormula placeholders are handled in aturInputHeadbox()
+ // Tab 4: Headbox Flowrate
   setPlaceholder("pulpConcentrationFormula", t.placeholders.pulpConcentrationFormula);
-
-  // Update dynamic fields based on material selection etc.
+ // Update dynamic fields based on material selection etc.
   aturGSMdanPisau(); 
-  aturInputHeadbox(); 
-
-  // Update notification text if visible
+  aturInputHeadbox();
+ // Update notification text if visible
   const popupNotifikasi = document.getElementById("notifikasiSelesaiPopup");
-  if (popupNotifikasi && popupNotifikasi.classList.contains("show")) {
+ if (popupNotifikasi && popupNotifikasi.classList.contains("show")) {
       setText("teksNotifikasiSelesai", t.notifikasi.pesan);
       setText("btnTutupNotifikasi", t.notifikasi.tutupButton);
-  }
+ }
 }
 
 function showTab(index){
@@ -354,21 +374,21 @@ function showTab(index){
   document.querySelectorAll(".content").forEach((c,i)=>{
     c.classList.toggle("active",i===index);
   });
-}
+ }
 
 function getValue(id, defaultValue = null, isNumeric = true) {
     const element = document.getElementById(id);
-    if (!element) {
+ if (!element) {
         console.warn(`getValue: Element with ID '${id}' not found.`);
         return defaultValue;
-    }
+ }
     let value = element.value;
     if (isNumeric) {
         value = parseFloat(value);
-        return isNaN(value) ? defaultValue : value;
+ return isNaN(value) ? defaultValue : value;
     }
     return value === "" ? defaultValue : value;
-}
+ }
 
 function hitungWaktuPengangkatan(){
   const lang=document.getElementById("language").value;
@@ -377,37 +397,36 @@ function hitungWaktuPengangkatan(){
   if (intervalCekWaktuNotifikasi) {
       clearInterval(intervalCekWaktuNotifikasi);
       intervalCekWaktuNotifikasi = null;
-  }
+ }
   targetWaktuSelesaiNotifikasi = null;
   notifikasiSudahDitampilkan = false;
 
   const target = getValue("targetProduksi");
   const berat = getValue("beratBobbin");
   const pot = getValue("jumlahPotongan");
-  const waktuPengangkatanPerBobbin = getValue("waktuPengangkatan");
+ const waktuPengangkatanPerBobbin = getValue("waktuPengangkatan");
   const jamMulai = getValue("jamMulai", null, false);
   const tgl = getValue("tanggalMulai", null, false);
-
-  if(target === null || target <= 0 || berat === null || berat <= 0 || pot === null || pot <= 0 || waktuPengangkatanPerBobbin === null || waktuPengangkatanPerBobbin <= 0 || !jamMulai || !tgl){
+ if(target === null || target <= 0 || berat === null || berat <= 0 || pot === null || pot <= 0 || waktuPengangkatanPerBobbin === null || waktuPengangkatanPerBobbin <= 0 || !jamMulai || !tgl){
     alert(t.alert);
-    setText("hasilPengangkatan",t.hasilPengangkatan);
+ setText("hasilPengangkatan",t.hasilPengangkatan);
     return;
   }
   const jumlahBobbin = target / (berat * pot);
   const totalWaktuPengangkatanMenit = jumlahBobbin * waktuPengangkatanPerBobbin;
   const [y,m,d]=tgl.split("-").map(Number);
-  const [h,parsedMin]=jamMulai.split(":").map(Number);
+ const [h,parsedMin]=jamMulai.split(":").map(Number);
   const dt=new Date(y,m-1,d,h,parsedMin);
   dt.setMinutes(dt.getMinutes() + Math.round(totalWaktuPengangkatanMenit));
   targetWaktuSelesaiNotifikasi = new Date(dt.getTime());
   const dateOptions = {year:"numeric",month:"2-digit",day:"2-digit"};
-  let localeString = lang === "en" ? "en-US" : lang === "zh" ? "zh-CN" : "id-ID";
+ let localeString = lang === "en" ? "en-US" : lang === "zh" ? "zh-CN" : "id-ID";
   const dateStr=dt.toLocaleDateString(localeString, dateOptions);
-  const timeStr=dt.toTimeString().slice(0,5);
+ const timeStr=dt.toTimeString().slice(0,5);
   setText("hasilPengangkatan", t.hasilPengangkatan+dateStr+" "+timeStr);
   if (targetWaktuSelesaiNotifikasi > new Date()) {
       intervalCekWaktuNotifikasi = setInterval(cekWaktuProduksiSelesaiSecaraBerkala, 5000);
-  }
+ }
   cekWaktuProduksiSelesaiSecaraBerkala(); 
 }
 
@@ -416,26 +435,25 @@ function aturGSMdanPisau(){
   const gsmEl=document.getElementById("gsm");
   const pisauEl=document.getElementById("pisau");
   const lang = document.getElementById("language").value;
-  const t = teks[lang];
-  
-  if (gsmEl) gsmEl.placeholder = t.placeholders.gsm || "GSM";
-  if (pisauEl) pisauEl.placeholder = t.placeholders.pisau || "Pisau";
+ const t = teks[lang];
 
-  let gsmVal = "", pisauVal = "";
-  const isReadonly = b !== ""; 
-  if(b==="Bouyan"){gsmVal=0.22;pisauVal=0.109;}
+  if (gsmEl && t.placeholders) gsmEl.placeholder = t.placeholders.gsm || "GSM"; // Added check for t.placeholders
+  if (pisauEl && t.placeholders) pisauEl.placeholder = t.placeholders.pisau || "Pisau"; // Added check for t.placeholders
+ let gsmVal = "", pisauVal = "";
+  const isReadonly = b !== "";
+ if(b==="Bouyan"){gsmVal=0.22;pisauVal=0.109;}
   else if(b==="BAT"){gsmVal=0.18;pisauVal=0.138;}
   else if(b==="Highlander"){gsmVal=0.095;pisauVal=0.2;}
 
   if (gsmEl && pisauEl) {
     gsmEl.value = gsmVal;
-    pisauEl.value = pisauVal;
+ pisauEl.value = pisauVal;
     gsmEl.readOnly = isReadonly;
     pisauEl.readOnly = isReadonly;
     if (b) { 
       gsmEl.classList.remove("hidden");
       pisauEl.classList.remove("hidden");
-    } else { 
+ } else { 
       gsmEl.classList.add("hidden");
       pisauEl.classList.add("hidden");
     }
@@ -445,30 +463,28 @@ function aturGSMdanPisau(){
 function hitungWaktuAngkat(){
   const lang=document.getElementById("language").value;
   const t=teks[lang];
-  const gsm = getValue("gsm");
+ const gsm = getValue("gsm");
   const pis = getValue("pisau");
   let speed = getValue("speed");
   const berat = getValue("berat");
-
-  if(gsm === null || pis === null || speed === null || berat === null || gsm <= 0 || pis <= 0 || speed <= 0 || berat <= 0){
+ if(gsm === null || pis === null || speed === null || berat === null || gsm <= 0 || pis <= 0 || speed <= 0 || berat <= 0){
     alert(t.alert);
-    setText("hasilWaktuAngkat",t.hasilWaktuAngkat);
+ setText("hasilWaktuAngkat",t.hasilWaktuAngkat);
     return;
   }
   const dur=berat/(gsm*pis*speed);
-  setText("hasilWaktuAngkat",t.hasilWaktuAngkat+dur.toFixed(2)+(lang==="zh"?" ç§’":lang==="en"?" seconds":" detik"));
+  setText("hasilWaktuAngkat",t.hasilWaktuAngkat+dur.toFixed(2)+(lang==="zh"?" 秒":lang==="en"?" seconds":" detik"));
 }
 
 function hitungAirRecycle(){
   const lang=document.getElementById("language").value;
   const t=teks[lang];
-  const jr = getValue("jumlahRecycle");
+ const jr = getValue("jumlahRecycle");
   const mo = getValue("moisture");
   const ko = getValue("konsentrasi");
-
-  if(jr === null || jr <= 0 || mo === null || mo <= 0 || mo >= 1 || ko === null || ko <= 0 || ko >= 1){
+ if(jr === null || jr <= 0 || mo === null || mo <= 0 || mo >= 1 || ko === null || ko <= 0 || ko >= 1){
     alert(t.alert);
-    setText("hasilAirRecycle",t.hasilAirRecycle);
+ setText("hasilAirRecycle",t.hasilAirRecycle);
     return;
   }
   const air=(jr*mo)/ko-jr;
@@ -479,12 +495,12 @@ function hitungFlowrateBaru(){
   const lang=document.getElementById("language").value;
   const t=teks[lang];
   const fa = getValue("flowAwal");
-  const ka = getValue("kecepatanAwal");
+ const ka = getValue("kecepatanAwal");
   const kb = getValue("kecepatanBaru");
 
-  if(fa === null || ka === null || kb === null || ka == 0 ){
+  if(fa === null || ka === null || kb === null || ka == 0 ){ // Note: ka <= 0 might be better than ka == 0
     alert(t.alert);
-    setText("hasilFlowrate",t.hasilFlowrate);
+ setText("hasilFlowrate",t.hasilFlowrate);
     return;
   }
   const fr=fa/ka*kb;
@@ -493,87 +509,92 @@ function hitungFlowrateBaru(){
 
 function aturInputHeadbox() {
     const bahanValue = document.getElementById("bahanHeadbox").value;
-    const gsmEl = document.getElementById("gsmFormula");
+ const gsmEl = document.getElementById("gsmFormula");
     const kecepatanEl = document.getElementById("kecepatanBeltingFormula");
     const lebarEl = document.getElementById("lebarKertasFormula");
     const lang = document.getElementById("language").value;
     const t = teks[lang];
-
-    setPlaceholder("gsmFormula", t.placeholders.gsmFormula);
-    setPlaceholder("kecepatanBeltingFormula", t.placeholders.kecepatanBeltingFormula);
-    setPlaceholder("lebarKertasFormula", t.placeholders.lebarKertasFormula);
+    if (t.placeholders) { // Added check for t.placeholders
+     setPlaceholder("gsmFormula", t.placeholders.gsmFormula);
+     setPlaceholder("kecepatanBeltingFormula", t.placeholders.kecepatanBeltingFormula);
+     setPlaceholder("lebarKertasFormula", t.placeholders.lebarKertasFormula);
+    }
 
     let gsmVal = "", kecepatanVal = "", lebarVal = "";
-    let gsmRO = false, kecepatanRO = false, lebarRO = false;
-
-    if (bahanValue === "Bouyan") {
-        gsmVal = 0.22; kecepatanVal = 10.20; lebarVal = 1.28;
+ let gsmRO = false, kecepatanRO = false, lebarRO = false;
+ if (bahanValue === "Bouyan") {
+        gsmVal = 0.22; kecepatanVal = 10.20;
+ lebarVal = 1.28;
         gsmRO = true; kecepatanRO = true; lebarRO = true;
-    } else if (bahanValue === "Custom") { // Input manual
-        gsmRO = false; kecepatanRO = false; lebarRO = false;
-    } else { // "Pilih Material" atau string kosong
-        gsmRO = false; kecepatanRO = false; lebarRO = false;
+ } else if (bahanValue === "Custom") { 
+        gsmRO = false;
+ kecepatanRO = false; lebarRO = false;
+    } else { 
+        gsmRO = false;
+ kecepatanRO = false; lebarRO = false;
     }
-    if (gsmEl) { gsmEl.value = gsmVal; gsmEl.readOnly = gsmRO; }
-    if (kecepatanEl) { kecepatanEl.value = kecepatanVal; kecepatanEl.readOnly = kecepatanRO; }
-    if (lebarEl) { lebarEl.value = lebarVal; lebarEl.readOnly = lebarRO; }
+    if (gsmEl) { gsmEl.value = gsmVal; gsmEl.readOnly = gsmRO;
+ }
+    if (kecepatanEl) { kecepatanEl.value = kecepatanVal; kecepatanEl.readOnly = kecepatanRO;
+ }
+    if (lebarEl) { lebarEl.value = lebarVal; lebarEl.readOnly = lebarRO;
+ }
 }
 
 function hitungFormulaHeadbox(){ 
     const lang = document.getElementById("language").value;
     const t = teks[lang];
     const gsm = getValue("gsmFormula");
-    const speed = getValue("kecepatanBeltingFormula");
+ const speed = getValue("kecepatanBeltingFormula");
     const paperWidth = getValue("lebarKertasFormula");
     const pulpConcentration = getValue("pulpConcentrationFormula");
     const konstantaAir = 0.93; const konstantaTetap = 1.04;
-
-    if (gsm === null || gsm <= 0 || speed === null || speed <= 0 || paperWidth === null || paperWidth <= 0 || pulpConcentration === null || pulpConcentration <= 0) {
+ if (gsm === null || gsm <= 0 || speed === null || speed <= 0 || paperWidth === null || paperWidth <= 0 || pulpConcentration === null || pulpConcentration <= 0) {
         alert(t.alert);
-        setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat);
+ setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat);
         return;
     }
     const hasil = (gsm * konstantaAir * speed * paperWidth) / pulpConcentration / konstantaTetap;
-    setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat + hasil.toFixed(2));
+ setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat + hasil.toFixed(2));
 }
 
 function tampilkanNotifikasiProduksiSelesai() {
     const lang = document.getElementById("language").value;
     const t = teks[lang];
-    const popup = document.getElementById("notifikasiSelesaiPopup");
+ const popup = document.getElementById("notifikasiSelesaiPopup");
     if(popup && t && t.notifikasi) {
         setText("teksNotifikasiSelesai", t.notifikasi.pesan);
-        setText("btnTutupNotifikasi", t.notifikasi.tutupButton);
+ setText("btnTutupNotifikasi", t.notifikasi.tutupButton);
         popup.classList.add("show");
     }
     notifikasiSudahDitampilkan = true;
-    if (intervalCekWaktuNotifikasi) {
+ if (intervalCekWaktuNotifikasi) {
         clearInterval(intervalCekWaktuNotifikasi);
         intervalCekWaktuNotifikasi = null;
-    }
+ }
 }
 
 function tutupNotifikasiSelesai() {
     const popup = document.getElementById("notifikasiSelesaiPopup");
     if (popup) popup.classList.remove("show");
-}
+ }
 
 function cekWaktuProduksiSelesaiSecaraBerkala() {
     if (!targetWaktuSelesaiNotifikasi || notifikasiSudahDitampilkan) return;
-    if (new Date() >= targetWaktuSelesaiNotifikasi) {
+ if (new Date() >= targetWaktuSelesaiNotifikasi) {
         tampilkanNotifikasiProduksiSelesai();
-    }
+ }
 }
 
 window.onload = function() {
     const tanggalMulaiEl = document.getElementById('tanggalMulai');
-    if(tanggalMulaiEl && !tanggalMulaiEl.value) { 
+ if(tanggalMulaiEl && !tanggalMulaiEl.value) { 
         const today = new Date();
-        const year = today.getFullYear();
+ const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         tanggalMulaiEl.value = `${year}-${month}-${day}`;
-    }
+ }
     ubahBahasa(); 
     tutupNotifikasiSelesai();
 };
@@ -582,59 +603,55 @@ window.onload = function() {
 async function sendToGroq() {
   const input = document.getElementById('inputTextGroq').value;
   const responseArea = document.getElementById('responseAreaGroq');
-  responseArea.textContent = 'Sedang memproses...';
+ responseArea.textContent = 'Sedang memproses...';
 
-  const contextMemory = `Kamu adalah asisten AI bernama Huabao yang ramah, santai, dan suka menjawab dengan bahasa Indonesia nonformal. Kamu ahli membantu perhitungan produksi berdasarkan HTML berikut.
+  const contextMemory = `Kamu adalah asisten AI bernama Huabao yang ramah, santai, dan suka menjawab dengan bahasa Indonesia nonformal.
+ Kamu ahli membantu perhitungan produksi berdasarkan HTML berikut.
 
 Gunakan gaya bahasa seperti ngobrol biasa, gak kaku, dan tetap jelas.
-
-Ringkasan Struktur HTML Kalkulator Produksi:
+ Ringkasan Struktur HTML Kalkulator Produksi:
 - Tab 0: Hitung Waktu Produksi
   - Input: target produksi, berat bobbin, jumlah potongan, waktu angkat per bobbin, tanggal & jam mulai.
-  - Output: Waktu selesai produksi.
+ - Output: Waktu selesai produksi.
 
 - Tab 1: Waktu Angkat Finish Good
   - Input: berat roll, bahan (Bouyan, BAT, Highlander), kecepatan belting.
-  - Otomatis isi GSM dan Pisau berdasarkan bahan.
+ - Otomatis isi GSM dan Pisau berdasarkan bahan.
   - Output: Durasi angkat.
-
-- Tab 2: Air Recycle
+ - Tab 2: Air Recycle
   - Input: jumlah recycle, moisture, konsentrasi pulp.
   - Output: Jumlah air yang diperlukan.
-
-- Tab 3: Flowrate Baru
+ - Tab 3: Flowrate Baru
   - Input: flowrate awal, kecepatan awal & kecepatan baru.
   - Output: Flowrate disarankan.
-
-- Tab 4: Flowrate Headbox
+ - Tab 4: Flowrate Headbox
   - Input: bahan (Bouyan/Custom), GSM, kecepatan belting, lebar kertas, konsentrasi pulp.
-  - Output: Flowrate Headbox.
+ - Output: Flowrate Headbox.
 
 - Tab 5: AI Huabao (chat dengan AI)
 
 Instruksi:
 Gunakan pemahaman di atas untuk menjawab pertanyaan pengguna berdasarkan struktur kalkulator.`;
-
-  try {
+ try {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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'
+        'Authorization': 'Bearer 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' // Harap ganti dengan kunci API Anda yang valid atau kelola dengan aman
       },
       body: JSON.stringify({
         model: "llama3-8b-8192",
         messages: [
           { role: "system", content: contextMemory },
-          { role: "user", content: input }
+          { 
+ role: "user", content: input }
         ]
       })
     });
-
-    const data = await res.json();
+ const data = await res.json();
     const reply = data.choices?.[0]?.message?.content || 'Tidak ada respons dari AI.';
     responseArea.textContent = reply;
-  } catch (error) {
+ } catch (error) {
     responseArea.textContent = 'Terjadi kesalahan: ' + error.message;
   }
 }
