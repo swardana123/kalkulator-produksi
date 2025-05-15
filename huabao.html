@@ -167,7 +167,7 @@ pre#responseAreaGroq {
   
 <div id="tab-5" class="content">
   <h2>Chat dengan Huabao Assisten</h2>
-  <textarea id="inputTextGroq" rows="5" placeholder="Tulis pertanyaan Anda di sini..."></textarea><br>
+  <textarea id="inputTextGroq" rows="5" style="width: 100%; max-width: 700px;" placeholder="Tulis pertanyaan Anda di sini..."></textarea><br>
   <button onclick="sendToGroq()">Kirim</button>
   <h3>Jawaban AI:</h3>
   <pre id="responseAreaGroq">Belum ada jawaban.</pre>
@@ -578,10 +578,42 @@ window.onload = function() {
     tutupNotifikasiSelesai();
 };
 
+
 async function sendToGroq() {
   const input = document.getElementById('inputTextGroq').value;
   const responseArea = document.getElementById('responseAreaGroq');
   responseArea.textContent = 'Sedang memproses...';
+
+  const contextMemory = `Kamu adalah asisten AI bernama Huabao yang ramah, santai, dan suka menjawab dengan bahasa Indonesia nonformal. Kamu ahli membantu perhitungan produksi berdasarkan HTML berikut.
+
+Gunakan gaya bahasa seperti ngobrol biasa, gak kaku, dan tetap jelas.
+
+Ringkasan Struktur HTML Kalkulator Produksi:
+- Tab 0: Hitung Waktu Produksi
+  - Input: target produksi, berat bobbin, jumlah potongan, waktu angkat per bobbin, tanggal & jam mulai.
+  - Output: Waktu selesai produksi.
+
+- Tab 1: Waktu Angkat Finish Good
+  - Input: berat roll, bahan (Bouyan, BAT, Highlander), kecepatan belting.
+  - Otomatis isi GSM dan Pisau berdasarkan bahan.
+  - Output: Durasi angkat.
+
+- Tab 2: Air Recycle
+  - Input: jumlah recycle, moisture, konsentrasi pulp.
+  - Output: Jumlah air yang diperlukan.
+
+- Tab 3: Flowrate Baru
+  - Input: flowrate awal, kecepatan awal & kecepatan baru.
+  - Output: Flowrate disarankan.
+
+- Tab 4: Flowrate Headbox
+  - Input: bahan (Bouyan/Custom), GSM, kecepatan belting, lebar kertas, konsentrasi pulp.
+  - Output: Flowrate Headbox.
+
+- Tab 5: AI Huabao (chat dengan AI)
+
+Instruksi:
+Gunakan pemahaman di atas untuk menjawab pertanyaan pengguna berdasarkan struktur kalkulator.`;
 
   try {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -593,7 +625,7 @@ async function sendToGroq() {
       body: JSON.stringify({
         model: "llama3-8b-8192",
         messages: [
-          { role: "system", content: "Kamu adalah asisten AI yang ramah dan membantu." },
+          { role: "system", content: contextMemory },
           { role: "user", content: input }
         ]
       })
@@ -606,6 +638,7 @@ async function sendToGroq() {
     responseArea.textContent = 'Terjadi kesalahan: ' + error.message;
   }
 }
+
 
 </script>
 </body>
