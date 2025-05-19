@@ -249,8 +249,7 @@ const teks = {
       tanggalMulai:"Start Date",jamMulai:"Start Time (e.g., 08:00)",
       berat:"Roll Weight (kg), e.g.: 16", gsm:"GSM (auto)", pisau:"Cutter (auto)", speed:"Belt Speed (m/sec, e.g.: 10.20)",
       jumlahRecycle:"Recycle Amount (kg, e.g.: 60)",moisture:"Moisture (fraction, e.g.: 0.93)", konsentrasi:"Concentration (fraction, e.g.: 0.16)",
-
-     flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Initial belt speed (m/sec)", kecepatanBaru:"New belt speed (m/sec)",
+      flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Initial belt speed (m/sec)", kecepatanBaru:"New belt speed (m/sec)",
       gsmFormula: "Enter GSM (e.g.: 0.22)", kecepatanBeltingFormula: "Enter Speed (e.g.: 10.0)", lebarKertasFormula: "Enter Width (e.g.: 1.30)", pulpConcentrationFormula: "e.g.: 0.17"
     }
   },
@@ -421,7 +420,7 @@ function hitungWaktuPengangkatan(){
   targetWaktuSelesaiNotifikasi = new Date(dt.getTime());
   const dateOptions = {year:"numeric",month:"2-digit",day:"2-digit"};
  let localeString = lang === "en" ? "en-US" : lang === "zh" ? "zh-CN" : "id-ID";
-  const dateStr=dt.toLocaleDateString(localeString, dateOptions);
+ const dateStr=dt.toLocaleDateString(localeString, dateOptions);
  const timeStr=dt.toTimeString().slice(0,5);
   setText("hasilPengangkatan", t.hasilPengangkatan+dateStr+" "+timeStr);
   if (targetWaktuSelesaiNotifikasi > new Date()) {
@@ -637,7 +636,7 @@ Gunakan pemahaman di atas untuk menjawab pertanyaan pengguna berdasarkan struktu
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer Gsk_ZfZLzW4Ok6l1j9LzDIKgWGdyb3FY1m6UvgaraY1Yl9CaathP7jkx' // Kunci API telah diganti di sini
+        'Authorization': 'Bearer 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' // Kunci API telah diganti di sini
       },
       body: JSON.stringify({
         model: "llama3-8b-8192",
