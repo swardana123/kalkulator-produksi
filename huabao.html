@@ -85,7 +85,7 @@
 pre#responseAreaGroq {
   white-space: pre-wrap;
   word-break: break-word;
-  overflow-wrap: break-word;
+  overflow-wrap: break-wrap;
   max-width: 100%;
   overflow-x: auto;
  }
@@ -127,7 +127,7 @@ pre#responseAreaGroq {
 
   <div id="tab-1" class="content">
     <h2 id="judul1">Perhitungan Waktu Angkat Finish Good</h2>
-    <input 
+    <input
  id="berat" type="number" />
     <select id="bahan" onchange="aturGSMdanPisau()">
       <option id="optBahan0" value="">Pilih Bahan</option>
@@ -337,8 +337,8 @@ function ubahBahasa(){
   setPlaceholder("beratBobbin", t.placeholders.beratBobbin);
   setPlaceholder("jumlahPotongan", t.placeholders.jumlahPotongan);
   setPlaceholder("waktuPengangkatan", t.placeholders.waktuPengangkatan);
- setPlaceholder("tanggalMulai", t.placeholders.tanggalMulai); 
-  setPlaceholder("jamMulai", t.placeholders.jamMulai);     
+ setPlaceholder("tanggalMulai", t.placeholders.tanggalMulai);
+  setPlaceholder("jamMulai", t.placeholders.jamMulai);
 
   // Tab 1: Finish Good Lifting Time
   setPlaceholder("berat", t.placeholders.berat);
@@ -357,7 +357,7 @@ function ubahBahasa(){
  // Tab 4: Headbox Flowrate
   setPlaceholder("pulpConcentrationFormula", t.placeholders.pulpConcentrationFormula);
  // Update dynamic fields based on material selection etc.
-  aturGSMdanPisau(); 
+  aturGSMdanPisau();
   aturInputHeadbox();
  // Update notification text if visible
   const popupNotifikasi = document.getElementById("notifikasiSelesaiPopup");
@@ -427,10 +427,10 @@ function hitungWaktuPengangkatan(){
   if (targetWaktuSelesaiNotifikasi > new Date()) {
       intervalCekWaktuNotifikasi = setInterval(cekWaktuProduksiSelesaiSecaraBerkala, 5000);
  }
-  cekWaktuProduksiSelesaiSecaraBerkala(); 
+  cekWaktuProduksiSelesaiSecaraBerkala();
 }
 
-function aturGSMdanPisau(){ 
+function aturGSMdanPisau(){
   const b=document.getElementById("bahan").value;
   const gsmEl=document.getElementById("gsm");
   const pisauEl=document.getElementById("pisau");
@@ -450,10 +450,10 @@ function aturGSMdanPisau(){
  pisauEl.value = pisauVal;
     gsmEl.readOnly = isReadonly;
     pisauEl.readOnly = isReadonly;
-    if (b) { 
+    if (b) {
       gsmEl.classList.remove("hidden");
       pisauEl.classList.remove("hidden");
- } else { 
+ } else {
       gsmEl.classList.add("hidden");
       pisauEl.classList.add("hidden");
     }
@@ -526,10 +526,10 @@ function aturInputHeadbox() {
         gsmVal = 0.22; kecepatanVal = 10.20;
  lebarVal = 1.28;
         gsmRO = true; kecepatanRO = true; lebarRO = true;
- } else if (bahanValue === "Custom") { 
+ } else if (bahanValue === "Custom") {
         gsmRO = false;
  kecepatanRO = false; lebarRO = false;
-    } else { 
+    } else {
         gsmRO = false;
  kecepatanRO = false; lebarRO = false;
     }
@@ -541,7 +541,7 @@ function aturInputHeadbox() {
  }
 }
 
-function hitungFormulaHeadbox(){ 
+function hitungFormulaHeadbox(){
     const lang = document.getElementById("language").value;
     const t = teks[lang];
     const gsm = getValue("gsmFormula");
@@ -588,14 +588,14 @@ function cekWaktuProduksiSelesaiSecaraBerkala() {
 
 window.onload = function() {
     const tanggalMulaiEl = document.getElementById('tanggalMulai');
- if(tanggalMulaiEl && !tanggalMulaiEl.value) { 
+ if(tanggalMulaiEl && !tanggalMulaiEl.value) {
         const today = new Date();
  const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         tanggalMulaiEl.value = `${year}-${month}-${day}`;
  }
-    ubahBahasa(); 
+    ubahBahasa();
     tutupNotifikasiSelesai();
 };
 
@@ -637,13 +637,13 @@ Gunakan pemahaman di atas untuk menjawab pertanyaan pengguna berdasarkan struktu
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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' // Harap ganti dengan kunci API Anda yang valid atau kelola dengan aman
+        'Authorization': 'Bearer Gsk_ZfZLzW4Ok6l1j9LzDIKgWGdyb3FY1m6UvgaraY1Yl9CaathP7jkx' // Kunci API telah diganti di sini
       },
       body: JSON.stringify({
         model: "llama3-8b-8192",
         messages: [
           { role: "system", content: contextMemory },
-          { 
+          {
  role: "user", content: input }
         ]
       })
