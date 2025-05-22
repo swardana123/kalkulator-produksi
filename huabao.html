@@ -1,257 +1,652 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Kalkulator Komposisi Bahan Dinamis</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 15px;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
-            text-align: center;
-        }
-        h2 {
-            margin-top: 25px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        h3 {
-            margin-top: 0;
-            color: #34495e;
-        }
-        label {
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-        input[type="text"],
-        input[type="number"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            margin-top: 15px;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button.add-ingredient-btn {
-            background-color: #2ecc71;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        button.add-ingredient-btn:hover {
-            background-color: #27ae60;
-        }
-        textarea {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-top: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-            min-height: 100px;
-        }
-        .result-text {
-            font-weight: bold;
-            color: #27ae60;
-        }
-        .input-group {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .overall-inputs {
-            background-color: #e8f4fd;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 25px;
-        }
-    </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kalkulator Produksi Lengkap</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(to bottom right, #e3f2fd, #ffffff); margin:0; padding:10px; color:#333; }
+    .header { display:flex; flex-direction:column; gap:10px; align-items:center; margin-bottom:20px; }
+    .header h1 { font-size:1.5rem; text-align:center; margin-top: 0; margin-bottom: 5px; }
+    select { padding:8px; font-size:1rem; border-radius:6px; border:1px solid #ccc; }
+    .tab-container { display:flex; flex-wrap: wrap; margin-bottom:10px; border-radius:8px; overflow:hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .tab { flex:1; min-width: 150px; padding:10px; background-color:#eee; text-align:center; cursor:pointer; transition:background-color .3s; font-size:.90rem; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;}
+    .tab:last-child { border-right: none; }
+    .tab.active { background-color:#2196F3; color:white; font-weight:bold; border-bottom-color: #2196F3; }
+    .content { display:none; background:white; padding:15px; border-radius:0 0 8px 8px; box-shadow:0 2px 10px rgba(0,0,0,.1); animation: fadeIn 0.5s; margin-top:-1px; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .content.active { display:block; }
+    input, select, button { width:100%; max-width:400px; padding:10px; margin:8px 0; font-size:1rem; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
+    label { display: block; margin-top: 10px; font-weight: bold; font-size: 0.9rem; color: #555;}
+    button { background-color:#2196F3; color:white; border:none; cursor:pointer; transition: background-color 0.3s; }
+    button:hover { background-color:#1976D2; }
+    .hasil { margin-top:10px; padding: 10px; background-color: #e8f5e9; border-left: 5px solid #4CAF50; font-weight:bold; color:#2E7D32; border-radius: 4px; }
+    .hidden { display:none !important; }
+    input[readonly] {
+        background-color: #e9ecef;
+        color: #495057;
+        cursor: not-allowed;
+    }
+    h2 { margin-top: 0; color: #1976D2; }
+
+    /* Notifikasi Popup */
+    .notifikasi-popup {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: opacity 0.5s, transform 0.5s;
+        opacity: 0;
+        transform: translateY(100px);
+        pointer-events: none;
+    }
+    .notifikasi-popup.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .notifikasi-popup button {
+        background-color: white;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        max-width: 100px;
+        margin: 0;
+        width: auto;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Kalkulator Komposisi Bahan Dinamis</h1>
+  <div class="header">
+    <select id="language" onchange="ubahBahasa()">
+      <option value="id">Bahasa Indonesia</option>
+      <option value="en">English</option>
+      <option value="zh">ä¸­æ–‡ (Mandarin)</option>
+    </select>
+    <h1 id="judulHalaman">Gabungan Kalkulator Produksi</h1>
+  </div>
 
-        <div class="overall-inputs">
-            <label for="productName">Nama Produk Jadi:</label>
-            <input type="text" id="productName" placeholder="Mis: Produk ABC">
+  <div class="tab-container">
+    <div class="tab active" onclick="showTab(0)" id="tab0">Hitung Waktu Produksi</div>
+    <div class="tab" onclick="showTab(1)" id="tab1">Waktu Angkat FG</div>
+    <div class="tab" onclick="showTab(2)" id="tab2">Air Recycle</div>
+    <div class="tab" onclick="showTab(3)" id="tab3">Flowrate Baru</div>
+    <div class="tab" onclick="showTab(4)" id="tab4">Flowrate Headbox</div>
+  </div>
 
-            <label for="baseRecycleAmount">Berat Acuan Recycle (kg):</label>
-            <input type="number" id="baseRecycleAmount" placeholder="Contoh: 18.75" step="any">
+  <div id="tab-0" class="content active">
+    <h2 id="judul0">Hitung Waktu Produksi</h2>
+    <input id="targetProduksi" type="number" />
+    <input id="beratBobbin" type="number" />
+    <input id="jumlahPotongan" type="number" />
+    <input id="waktuPengangkatan" type="number" />
+    <input id="tanggalMulai" type="date" />
+    <input id="jamMulai" type="time" />
+    <button onclick="hitungWaktuPengangkatan()" id="btnPengangkatan">Hitung Waktu Selesai</button>
+    <div class="hasil" id="hasilPengangkatan">Waktu Selesai Produksi: </div>
+  </div>
 
-            <label for="targetRecycleAmount">Target Produksi Recycle (kg):</label>
-            <input type="number" id="targetRecycleAmount" placeholder="Contoh: 30" step="any">
-        </div>
+  <div id="tab-1" class="content">
+    <h2 id="judul1">Perhitungan Waktu Angkat Finish Good</h2>
+    <input id="berat" type="number" />
+    <select id="bahan" onchange="aturGSMdanPisau()">
+      <option id="optBahan0" value="">Pilih Bahan</option>
+      <option id="optBahan1" value="Bouyan">Bouyan</option>
+      <option id="optBahan2" value="BAT">BAT</option>
+      <option id="optBahan3" value="Highlander">Highlander</option>
+    </select>
+    <input class="hidden" id="gsm" type="number" readonly/> <input class="hidden" id="pisau" type="number" readonly/> <input id="speed" type="number" />
+    <button onclick="hitungWaktuAngkat()" id="btnHitung">Hitung Durasi Angkat</button>
+    <div class="hasil" id="hasilWaktuAngkat">Durasi Angkat: </div>
+  </div>
 
-        <h2>Detail Bahan</h2>
-        <div id="ingredientSectionsContainer">
-            <div class="input-group" data-ingredient-id="1">
-                <h3>Bahan 1</h3>
-                <label for="ingredientName1">Nama Bahan 1:</label>
-                <input type="text" id="ingredientName1" class="ingredient-name-input" placeholder="Nama Bahan">
-                <label for="ingredientRatio1">Rasio Bhn 1 (dlm Berat Acuan):</label>
-                <input type="number" id="ingredientRatio1" class="ingredient-ratio-input" placeholder="Mis: 0.19" step="any">
-                <label for="ingredientPercent1">Persentase Penggunaan Bhn 1 (%):</label>
-                <input type="number" id="ingredientPercent1" class="ingredient-percent-input" placeholder="Mis: 100" step="any">
-                <p>Kebutuhan <span class="ingredientNameDisplay" id="ingredientNameDisplay1">Bahan 1</span>: <span class="result-text ingredient-result" id="ingredientResult1">0</span> kg</p>
-            </div>
-        </div>
-        
-        <button onclick="addIngredientColumn()" class="add-ingredient-btn">Tambah Kolom Bahan</button>
-        <button onclick="calculateAll()">Hitung Semua</button>
-        
-        <h2>Ringkasan untuk Disalin</h2>
-        <textarea id="summaryForCopy" rows="8" placeholder="Hasil perhitungan akan muncul di sini..." readonly></textarea>
-        <button onclick="copySummary()">Salin Ringkasan</button>
-    </div>
+  <div id="tab-2" class="content">
+    <h2 id="judul2">Perhitungan Air Recycle</h2>
+    <input id="jumlahRecycle" type="number" />
+    <input id="moisture" type="number" step="any" />
+    <input id="konsentrasi" type="number" step="any" />
+    <button onclick="hitungAirRecycle()" id="btnAir">Hitung Air Recycle</button>
+    <div class="hasil" id="hasilAirRecycle">Jumlah Air yang Diperlukan: </div>
+  </div>
 
-    <script>
-        let ingredientCounter = 1; // Dimulai dari 1 karena sudah ada 1 bahan default
+  <div id="tab-3" class="content">
+    <h2 id="judul3">Flowrate Baru</h2>
+    <input id="flowAwal" type="number" step="any" />
+    <input id="kecepatanAwal" type="number" step="any" />
+    <input id="kecepatanBaru" type="number" step="any" />
+    <button onclick="hitungFlowrateBaru()" id="btnFlowrate">Hitung Flowrate Baru</button>
+    <div class="hasil" id="hasilFlowrate">Laju Aliran Disarankan: </div>
+  </div>
 
-        function addIngredientColumn() {
-            ingredientCounter++;
-            const container = document.getElementById('ingredientSectionsContainer');
-            const newIngredientHTML = `
-                <div class="input-group" data-ingredient-id="${ingredientCounter}">
-                    <h3>Bahan ${ingredientCounter}</h3>
-                    <label for="ingredientName${ingredientCounter}">Nama Bahan ${ingredientCounter}:</label>
-                    <input type="text" id="ingredientName${ingredientCounter}" class="ingredient-name-input" placeholder="Nama Bahan">
-                    <label for="ingredientRatio${ingredientCounter}">Rasio Bhn ${ingredientCounter} (dlm Berat Acuan):</label>
-                    <input type="number" id="ingredientRatio${ingredientCounter}" class="ingredient-ratio-input" placeholder="Mis: Rasio" step="any">
-                    <label for="ingredientPercent${ingredientCounter}">Persentase Penggunaan Bhn ${ingredientCounter} (%):</label>
-                    <input type="number" id="ingredientPercent${ingredientCounter}" class="ingredient-percent-input" placeholder="Mis: 100" step="any">
-                    <p>Kebutuhan <span class="ingredientNameDisplay" id="ingredientNameDisplay${ingredientCounter}">Bahan ${ingredientCounter}</span>: <span class="result-text ingredient-result" id="ingredientResult${ingredientCounter}">0</span> kg</p>
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', newIngredientHTML);
-            attachEventListenersToNewInputs(ingredientCounter);
-            updateIngredientDisplayNames(); // Update semua nama display
-            calculateAll(); // Hitung ulang setelah menambahkan
-        }
+  <div id="tab-4" class="content">
+    <h2 id="judul4">Mencari Flow rate Headbox</h2>
+    <label for="bahanHeadbox" id="lblBahanHeadbox">Pilih Material:</label>
+    <select id="bahanHeadbox" onchange="aturInputHeadbox()">
+      <option id="optBahanHeadbox0" value="">Pilih Material</option>
+      <option id="optBahanHeadboxBouyan" value="Bouyan">Bouyan</option>
+      <option id="optBahanHeadboxCustom" value="Custom">Custom</option>
+    </select>
+    
+    <label for="gsmFormula" id="lblGsmFormulaHeadbox">GSM:</label>
+    <input id="gsmFormula" type="number" step="any"/>
+    
+    <label for="kecepatanBeltingFormula" id="lblKecepatanBeltingFormulaHeadbox">Kecepatan Belting (m/detik):</label>
+    <input id="kecepatanBeltingFormula" type="number" step="any"/>
+    
+    <label for="lebarKertasFormula" id="lblLebarKertasFormulaHeadbox">Lebar Kertas (meter):</label>
+    <input id="lebarKertasFormula" type="number" step="any"/>
+    
+    <label for="pulpConcentrationFormula" id="lblPulpConcentrationFormulaHeadbox">Konsentrasi Pulp (fraksi):</label>
+    <input id="pulpConcentrationFormula" type="number" step="any"/>
+    
+    <button onclick="hitungFormulaHeadbox()" id="btnFormulaZatPadat">Hitung Flowrate Headbox</button>
+    <div class="hasil" id="hasilFormulaZatPadat">Flowrate Headbox: </div>
+  </div>
 
-        function updateIngredientDisplayNames() {
-            const nameInputs = document.querySelectorAll('.ingredient-name-input');
-            nameInputs.forEach(input => {
-                const idNum = input.id.replace('ingredientName', '');
-                const displaySpan = document.getElementById(`ingredientNameDisplay${idNum}`);
-                if (displaySpan) {
-                    displaySpan.textContent = input.value || `Bahan ${idNum}`;
-                }
-            });
-        }
-        
-        function attachEventListenersToAllInputs() {
-            const allInputs = document.querySelectorAll('.overall-inputs input, .input-group input');
-            allInputs.forEach(input => {
-                input.addEventListener('input', () => {
-                    updateIngredientDisplayNames(); // Selalu update nama
-                    calculateAll(); // Lalu hitung
-                });
-            });
-        }
+  <div id="notifikasiSelesaiPopup" class="notifikasi-popup">
+    <span id="teksNotifikasiSelesai"></span>
+    <button id="btnTutupNotifikasi" onclick="tutupNotifikasiSelesai()">Tutup</button>
+  </div>
 
-        function attachEventListenersToNewInputs(idNum) {
-            document.getElementById(`ingredientName${idNum}`).addEventListener('input', () => {
-                updateIngredientDisplayNames();
-                calculateAll();
-            });
-            document.getElementById(`ingredientRatio${idNum}`).addEventListener('input', calculateAll);
-            document.getElementById(`ingredientPercent${idNum}`).addEventListener('input', calculateAll);
-        }
+<script>
+// Variabel global untuk notifikasi
+let targetWaktuSelesaiNotifikasi = null;
+let intervalCekWaktuNotifikasi = null;
+let notifikasiSudahDitampilkan = false;
+
+const teks = {
+  id:{
+    judulHalaman:"Gabungan Kalkulator Produksi",
+    tab0:"Hitung Waktu Produksi",tab1:"Waktu Angkat FG",tab2:"Air Recycle",tab3:"Flowrate Baru", tab4:"Flowrate Headbox", // Nama generik kembali
+    judul0:"Hitung Waktu Produksi",judul1:"Perhitungan Waktu Angkat Finish Good",judul2:"Perhitungan Air Recycle",judul3:"Flowrate Baru", judul4:"Mencari Flow rate Headbox", // Nama generik kembali
+    btnPengangkatan:"Hitung Waktu Selesai",hasilPengangkatan:"Waktu Selesai Produksi: ",alert:"Mohon lengkapi semua data yang diperlukan dengan benar.",
+    btnHitung:"Hitung Durasi Angkat",hasilWaktuAngkat:"Durasi Angkat: ",
+    btnAir:"Hitung Air Recycle",hasilAirRecycle:"Jumlah Air yang Diperlukan: ",
+    btnFlowrate:"Hitung Flowrate Baru",hasilFlowrate:"Laju Aliran Disarankan: ",
+    btnFormulaZatPadat:"Hitung Flowrate Headbox", hasilFormulaZatPadat:"Flowrate Headbox: ",
+    optBahan0:"Pilih Bahan", // Untuk Tab 1
+    // Untuk Tab 4
+    optBahanHeadbox0: "Pilih Material",
+    optBahanHeadboxBouyan: "Bouyan",
+    optBahanHeadboxCustom: "Kustom",
+    lblBahanHeadbox: "Pilih Material:",
+    lblGsmFormulaHeadbox: "GSM:",
+    lblKecepatanBeltingFormulaHeadbox: "Kecepatan Belting (m/detik):",
+    lblLebarKertasFormulaHeadbox: "Lebar Kertas (meter):",
+    lblPulpConcentrationFormulaHeadbox: "Konsentrasi Pulp (fraksi):",
+    notifikasi: {
+        pesan: "Waktu produksi yang dihitung telah tercapai!",
+        tutupButton: "Tutup"
+    },
+    placeholders:{
+      targetProduksi:"Target Produksi (cth: 1500)",beratBobbin:"Berat Bobbin (kg, cth: 15)",
+      jumlahPotongan:"Potongan/Bobbin (cth: 10)",waktuPengangkatan:"Waktu Angkat/Bobbin (menit)",
+      tanggalMulai:"Tanggal Mulai",jamMulai:"Jam Mulai (misal: 08:00)",
+      berat:"Berat Roll (kg), cth: 16",
+      gsm:"GSM (otomatis)", // Placeholder untuk Tab 1 (saat ini tidak terlihat karena readonly dan hidden)
+      pisau:"Pisau (otomatis)", // Placeholder untuk Tab 1 (idem)
+      speed:"Kecepatan Belting (m/detik, cth: 10.20)", // Untuk Tab 1
+      jumlahRecycle:"Jumlah Recycle (kg, cth:60)",moisture:"Moisture (fraksi, cth:0.93)",
+      konsentrasi:"Konsentrasi (fraksi, cth:0.16)",
+      flowAwal:"Flow rate awal (L/jam, cth:100)",kecepatanAwal:"Kecepatan belting awal (m/detik)",
+      kecepatanBaru:"Kecepatan belting baru (m/detik)",
+      // Untuk Tab 4
+      gsmFormula: "Input GSM (cth: 0.22)",
+      kecepatanBeltingFormula: "Input Kecepatan (cth: 10.0)",
+      lebarKertasFormula: "Input Lebar (cth: 1.30)",
+      pulpConcentrationFormula: "cth: 0.17"
+    }
+  },
+  en:{
+    judulHalaman:"Combined Production Calculator",
+    tab0:"Production Time",tab1:"FG Lifting Time",tab2:"Water Recycle",tab3:"New Flowrate", tab4:"Headbox Flowrate",
+    judul0:"Production Time Calculation",judul1:"Finish Good Lifting Time Calculation",judul2:"Water Recycle Calculation",judul3:"New Flowrate Calculation", judul4:"Headbox Flowrate Calculation",
+    btnPengangkatan:"Calculate End Time",hasilPengangkatan:"Production Ends: ",alert:"Please complete all required fields correctly.",
+    btnHitung:"Calculate Lifting Duration",hasilWaktuAngkat:"Lifting Duration: ",
+    btnAir:"Calculate Water Recycle",hasilAirRecycle:"Required Water: ",
+    btnFlowrate:"Calculate New Flowrate",hasilFlowrate:"Recommended Flow Rate: ",
+    btnFormulaZatPadat:"Calculate Headbox Flowrate", hasilFormulaZatPadat:"Headbox Flowrate: ",
+    optBahan0:"Select Material",
+    optBahanHeadbox0: "Select Material",
+    optBahanHeadboxBouyan: "Bouyan",
+    optBahanHeadboxCustom: "Custom",
+    lblBahanHeadbox: "Select Material:",
+    lblGsmFormulaHeadbox: "GSM:",
+    lblKecepatanBeltingFormulaHeadbox: "Belt Speed (m/sec):",
+    lblLebarKertasFormulaHeadbox: "Paper Width (meter):",
+    lblPulpConcentrationFormulaHeadbox: "Pulp Concentration (fraction):",
+    notifikasi: {
+        pesan: "The calculated production time has been reached!",
+        tutupButton: "Close"
+    },
+    placeholders:{
+      targetProduksi:"Target Output (e.g.: 1500)",beratBobbin:"Bobbin Weight (kg, e.g.: 15)",
+      jumlahPotongan:"Cuts/Bobbin (e.g.: 10)",waktuPengangkatan:"Lifting Time/Bobbin (min)",
+      tanggalMulai:"Start Date",jamMulai:"Start Time (e.g., 08:00)",
+      berat:"Roll Weight (kg), e.g.: 16",
+      gsm:"GSM (auto)",
+      pisau:"Cutter (auto)",
+      speed:"Belt Speed (m/sec, e.g.: 10.20)",
+      jumlahRecycle:"Recycle Amount (kg, e.g.: 60)",moisture:"Moisture (fraction, e.g.: 0.93)",
+      konsentrasi:"Concentration (fraction, e.g.: 0.16)",
+      flowAwal:"Initial flow rate (L/hr, e.g.: 100)",kecepatanAwal:"Initial belt speed (m/sec)",
+      kecepatanBaru:"New belt speed (m/sec)",
+      gsmFormula: "Enter GSM (e.g.: 0.22)",
+      kecepatanBeltingFormula: "Enter Speed (e.g.: 10.0)",
+      lebarKertasFormula: "Enter Width (e.g.: 1.30)",
+      pulpConcentrationFormula: "e.g.: 0.17"
+    }
+  },
+  zh:{
+    judulHalaman:"ç”Ÿäº§è®¡ç®—å™¨åˆé›†",
+    tab0:"ç”Ÿäº§æ—¶é—´",tab1:"æˆå“æå–æ—¶é—´",tab2:"å¾ªçŽ¯æ°´",tab3:"æ–°æµé€Ÿ", tab4:"ç½‘å‰ç®±æµé€Ÿ",
+    judul0:"ç”Ÿäº§æ—¶é—´è®¡ç®—",judul1:"æˆå“æå–æ—¶é—´è®¡ç®—",judul2:"å¾ªçŽ¯æ°´è®¡ç®—",judul3:"æ–°æµé€Ÿè®¡ç®—", judul4:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ",
+    btnPengangkatan:"è®¡ç®—ç»“æŸæ—¶é—´",hasilPengangkatan:"ç”Ÿäº§ç»“æŸäºŽï¼š",alert:"è¯·æ­£ç¡®å¡«å†™æ‰€æœ‰å¿…å¡«ä¿¡æ¯ã€‚",
+    btnHitung:"è®¡ç®—æå–æ—¶é•¿",hasilWaktuAngkat:"æå–æ—¶é•¿ï¼š",
+    btnAir:"è®¡ç®—å¾ªçŽ¯æ°´é‡",hasilAirRecycle:"æ‰€éœ€æ°´é‡ï¼š",
+    btnFlowrate:"è®¡ç®—æ–°æµé€Ÿ",hasilFlowrate:"å»ºè®®æµé€Ÿï¼š",
+    btnFormulaZatPadat:"è®¡ç®—ç½‘å‰ç®±æµé€Ÿ", hasilFormulaZatPadat:"ç½‘å‰ç®±æµé€Ÿï¼š",
+    optBahan0:"é€‰æ‹©ææ–™",
+    optBahanHeadbox0: "é€‰æ‹©ææ–™",
+    optBahanHeadboxBouyan: "Bouyan",
+    optBahanHeadboxCustom: "è‡ªå®šä¹‰",
+    lblBahanHeadbox: "é€‰æ‹©ææ–™:",
+    lblGsmFormulaHeadbox: "å…‹é‡:",
+    lblKecepatanBeltingFormulaHeadbox: "çš®å¸¦é€Ÿåº¦ (ç±³/ç§’):",
+    lblLebarKertasFormulaHeadbox: "çº¸å¼ å®½åº¦ (ç±³):",
+    lblPulpConcentrationFormulaHeadbox: "çº¸æµ†æµ“åº¦ (å°æ•°):",
+    notifikasi: {
+        pesan: "è®¡ç®—çš„ç”Ÿäº§æ—¶é—´å·²åˆ°ï¼",
+        tutupButton: "å…³é—­"
+    },
+    placeholders:{
+      targetProduksi:"ç›®æ ‡äº§é‡ï¼ˆä¾‹å¦‚ï¼š1500ï¼‰",beratBobbin:"ç­’é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š15ï¼‰",
+      jumlahPotongan:"æ¯ç­’åˆ‡å‰²æ•°ï¼ˆä¾‹å¦‚ï¼š10ï¼‰",waktuPengangkatan:"æ¯ç­’æå‡æ—¶é—´ï¼ˆåˆ†é’Ÿï¼‰",
+      tanggalMulai:"å¼€å§‹æ—¥æœŸ",jamMulai:"å¼€å§‹æ—¶é—´ï¼ˆä¾‹å¦‚ï¼š08:00ï¼‰",
+      berat:"å·é‡ï¼ˆå…¬æ–¤ï¼‰ï¼Œä¾‹å¦‚ï¼š16",
+      gsm:"å…‹é‡ï¼ˆè‡ªåŠ¨ï¼‰",
+      pisau:"åˆ€å…·ï¼ˆè‡ªåŠ¨ï¼‰",
+      speed:"çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼Œä¾‹å¦‚ï¼š10.20ï¼‰",
+      jumlahRecycle:"å¾ªçŽ¯æ•°é‡ï¼ˆå…¬æ–¤ï¼Œä¾‹å¦‚ï¼š60ï¼‰",moisture:"æ°´åˆ†ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.93ï¼‰",
+      konsentrasi:"æµ“åº¦ï¼ˆå°æ•°ï¼Œä¾‹å¦‚ï¼š0.16ï¼‰",
+      flowAwal:"åˆå§‹æµé€Ÿï¼ˆå‡/å°æ—¶ï¼Œä¾‹å¦‚ï¼š100ï¼‰",kecepatanAwal:"å½“å‰çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰",
+      kecepatanBaru:"æœ€æ–°çš®å¸¦é€Ÿåº¦ï¼ˆç±³/ç§’ï¼‰",
+      gsmFormula: "è¾“å…¥å…‹é‡ (ä¾‹å¦‚: 0.22)",
+      kecepatanBeltingFormula: "è¾“å…¥é€Ÿåº¦ (ä¾‹å¦‚: 10.0)",
+      lebarKertasFormula: "è¾“å…¥å®½åº¦ (ä¾‹å¦‚: 1.30)",
+      pulpConcentrationFormula: "ä¾‹å¦‚ï¼š0.17"
+    }
+  }
+};
+
+function setText(elementId, textContent) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.innerText = textContent !== undefined ? textContent : `{${elementId}}`;
+    } else {
+        console.warn(`Element with ID '${elementId}' not found for setText.`);
+    }
+}
+
+function setPlaceholder(elementId, placeholderText) {
+    const el = document.getElementById(elementId);
+    if (el && el.tagName === "INPUT" && !el.readOnly) {
+        el.placeholder = placeholderText !== undefined ? placeholderText : "";
+    } else if (el && el.tagName === "INPUT" && el.readOnly) {
+        el.placeholder = ""; 
+    } else if (!el && elementId) { // Hanya log jika elementId ada
+        console.warn(`Element with ID '${elementId}' not found for setPlaceholder.`);
+    }
+}
 
 
-        function calculateAll() {
-            const productName = document.getElementById("productName").value || "Produk Tanpa Nama";
-            const baseRecycle = parseFloat(document.getElementById("baseRecycleAmount").value) || 0;
-            const targetRecycle = parseFloat(document.getElementById("targetRecycleAmount").value) || 0;
+function ubahBahasa(){
+  const lang=document.getElementById("language").value;
+  const t=teks[lang];
 
-            let summaryText = `Nama Produk: ${productName}\nTarget Produksi Recycle: ${targetRecycle.toFixed(2)} kg\n---\nKebutuhan Bahan:\n`;
-            let totalCalculatedWeight = 0;
+  if (!t) {
+    console.error("Language data not found for:", lang);
+    return;
+  }
 
-            const ingredientGroups = document.querySelectorAll('.input-group');
-            ingredientGroups.forEach(group => {
-                const id = group.dataset.ingredientId;
-                const nameInput = document.getElementById(`ingredientName${id}`);
-                const ratioInput = document.getElementById(`ingredientRatio${id}`);
-                const percentInput = document.getElementById(`ingredientPercent${id}`);
-                const resultDisplay = document.getElementById(`ingredientResult${id}`);
-                
-                const name = nameInput ? (nameInput.value || `Bahan ${id}`) : `Bahan ${id}`;
-                const ratio = ratioInput ? (parseFloat(ratioInput.value) || 0) : 0;
-                const percent = percentInput ? ((parseFloat(percentInput.value) || 0) / 100) : 0;
-                
-                let result = 0;
-                if (baseRecycle > 0) {
-                    result = ((ratio / baseRecycle) * targetRecycle * percent);
-                }
-                
-                if(resultDisplay) resultDisplay.textContent = result.toFixed(3);
-                summaryText += `${name}: ${result.toFixed(3)} kg\n`;
-                totalCalculatedWeight += result;
-            });
-            
-            summaryText += `---\nTotal Estimasi Berat Bahan Untuk Perset: ${totalCalculatedWeight.toFixed(3)} kg`; // Perubahan teks di sini
-            document.getElementById("summaryForCopy").value = summaryText;
-            updateIngredientDisplayNames(); // Pastikan nama display terupdate setelah kalkulasi
-        }
-        
-        function copySummary() {
-            const summaryTextarea = document.getElementById("summaryForCopy");
-            if (summaryTextarea.value.trim() === "" || summaryTextarea.value.includes("Kebutuhan Bahan:\n---")) {
-                 // Cek jika hanya header atau kosong
-                alert("Tidak ada hasil perhitungan yang signifikan untuk disalin.");
-                return;
-            }
-            summaryTextarea.select();
-            summaryTextarea.setSelectionRange(0, 99999);
-            try {
-                document.execCommand("copy");
-                alert("Ringkasan telah disalin ke clipboard!");
-            } catch (err) {
-                alert("Gagal menyalin. Browser Anda mungkin tidak mendukung fitur ini atau memerlukan izin.");
-            }
-        }
-        
-        window.onload = () => {
-            // Hanya ada 1 bahan secara default, jadi counter dimulai dari 1
-            // Tidak perlu menginisialisasi bahan 2 & 3 lagi
-            attachEventListenersToAllInputs(); // Pasang listener ke input yang sudah ada
-            updateIngredientDisplayNames(); // Update nama display di awal
-            calculateAll(); // Lakukan perhitungan awal
-        };
-    </script>
+  setText("judulHalaman", t.judulHalaman);
+  ["tab0","tab1","tab2","tab3","tab4"].forEach((id,i)=>setText(id, t["tab"+i]));
+  ["judul0","judul1","judul2","judul3","judul4"].forEach((id,i)=>setText(id, t["judul"+i]));
+  
+  setText("btnPengangkatan", t.btnPengangkatan);
+  setText("hasilPengangkatan", t.hasilPengangkatan);
+  setText("btnHitung", t.btnHitung);
+  setText("hasilWaktuAngkat", t.hasilWaktuAngkat);
+  setText("btnAir", t.btnAir);
+  setText("hasilAirRecycle", t.hasilAirRecycle);
+  setText("btnFlowrate", t.btnFlowrate);
+  setText("hasilFlowrate", t.hasilFlowrate);
+  setText("btnFormulaZatPadat", t.btnFormulaZatPadat);
+  setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat);
+
+  setText("optBahan0", t.optBahan0); // Untuk Tab 1
+  
+  // Terjemahan untuk Tab 4
+  setText("lblBahanHeadbox", t.lblBahanHeadbox);
+  setText("optBahanHeadbox0", t.optBahanHeadbox0);
+  setText("optBahanHeadboxBouyan", t.optBahanHeadboxBouyan);
+  setText("optBahanHeadboxCustom", t.optBahanHeadboxCustom);
+  setText("lblGsmFormulaHeadbox", t.lblGsmFormulaHeadbox);
+  setText("lblKecepatanBeltingFormulaHeadbox", t.lblKecepatanBeltingFormulaHeadbox);
+  setText("lblLebarKertasFormulaHeadbox", t.lblLebarKertasFormulaHeadbox);
+  setText("lblPulpConcentrationFormulaHeadbox", t.lblPulpConcentrationFormulaHeadbox);
+  
+  // Set placeholders
+  setPlaceholder("targetProduksi", t.placeholders.targetProduksi);
+  setPlaceholder("beratBobbin", t.placeholders.beratBobbin);
+  setPlaceholder("jumlahPotongan", t.placeholders.jumlahPotongan);
+  setPlaceholder("waktuPengangkatan", t.placeholders.waktuPengangkatan);
+  setPlaceholder("jamMulai", t.placeholders.jamMulai);
+  setPlaceholder("berat", t.placeholders.berat);
+  setPlaceholder("speed", t.placeholders.speed);
+  setPlaceholder("jumlahRecycle", t.placeholders.jumlahRecycle);
+  setPlaceholder("moisture", t.placeholders.moisture);
+  setPlaceholder("konsentrasi", t.placeholders.konsentrasi);
+  setPlaceholder("flowAwal", t.placeholders.flowAwal);
+  setPlaceholder("kecepatanAwal", t.placeholders.kecepatanAwal);
+  setPlaceholder("kecepatanBaru", t.placeholders.kecepatanBaru);
+  // Placeholder untuk Tab 4 akan di-handle oleh aturInputHeadbox saat dipanggil
+  setPlaceholder("pulpConcentrationFormula", t.placeholders.pulpConcentrationFormula);
+
+
+  aturGSMdanPisau(); // Untuk Tab 1
+  aturInputHeadbox(); // Untuk Tab 4
+
+  const popupNotifikasi = document.getElementById("notifikasiSelesaiPopup");
+  if (popupNotifikasi && popupNotifikasi.classList.contains("show")) {
+      setText("teksNotifikasiSelesai", t.notifikasi.pesan);
+      setText("btnTutupNotifikasi", t.notifikasi.tutupButton);
+  }
+}
+
+function showTab(index){
+  document.querySelectorAll(".tab").forEach((tab,i)=>{
+    tab.classList.toggle("active",i===index);
+  });
+  document.querySelectorAll(".content").forEach((c,i)=>{
+    c.classList.toggle("active",i===index);
+  });
+}
+
+function getValue(id, defaultValue = null, isNumeric = true) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.warn(`getValue: Element with ID '${id}' not found.`);
+        return defaultValue;
+    }
+    let value = element.value;
+    if (isNumeric) {
+        value = parseFloat(value);
+        return isNaN(value) ? defaultValue : value;
+    }
+    return value === "" ? defaultValue : value;
+}
+
+function hitungWaktuPengangkatan(){
+  const lang=document.getElementById("language").value;
+  const t=teks[lang];
+
+  tutupNotifikasiSelesai();
+  if (intervalCekWaktuNotifikasi) {
+      clearInterval(intervalCekWaktuNotifikasi);
+      intervalCekWaktuNotifikasi = null;
+  }
+  targetWaktuSelesaiNotifikasi = null;
+  notifikasiSudahDitampilkan = false;
+
+  const target = getValue("targetProduksi", 1500);
+  const berat = getValue("beratBobbin", 15);
+  const pot = getValue("jumlahPotongan", 10);
+  const waktuPengangkatanPerBobbin = getValue("waktuPengangkatan", null);
+  const jamMulai = getValue("jamMulai", null, false);
+  const tgl = getValue("tanggalMulai", null, false);
+
+  if(target <= 0 || berat <= 0 || pot <= 0 || waktuPengangkatanPerBobbin === null || waktuPengangkatanPerBobbin <= 0 || !jamMulai || !tgl){
+    alert(t.alert);
+    setText("hasilPengangkatan",t.hasilPengangkatan);
+    return;
+  }
+
+  const jumlahBobbin = target / (berat * pot);
+  const totalWaktuPengangkatanMenit = jumlahBobbin * waktuPengangkatanPerBobbin;
+
+  const [y,m,d]=tgl.split("-").map(Number);
+  const [h,parsedMin]=jamMulai.split(":").map(Number);
+
+  const dt=new Date(y,m-1,d,h,parsedMin);
+  dt.setMinutes(dt.getMinutes() + Math.round(totalWaktuPengangkatanMenit));
+  
+  targetWaktuSelesaiNotifikasi = new Date(dt.getTime());
+
+  const dateOptions = {year:"numeric",month:"2-digit",day:"2-digit"};
+  let localeString = "id-ID";
+  if (lang === "en") localeString = "en-US";
+  else if (lang === "zh") localeString = "zh-CN";
+  
+  const dateStr=dt.toLocaleDateString(localeString, dateOptions);
+  const timeStr=dt.toTimeString().slice(0,5);
+  setText("hasilPengangkatan", t.hasilPengangkatan+dateStr+" "+timeStr);
+
+  if (targetWaktuSelesaiNotifikasi > new Date()) {
+      intervalCekWaktuNotifikasi = setInterval(cekWaktuProduksiSelesaiSecaraBerkala, 5000);
+      cekWaktuProduksiSelesaiSecaraBerkala(); 
+  } else {
+      cekWaktuProduksiSelesaiSecaraBerkala();
+  }
+}
+
+function aturGSMdanPisau(){ // Untuk Tab 1
+  const b=document.getElementById("bahan").value;
+  const gsmEl=document.getElementById("gsm");
+  const pisauEl=document.getElementById("pisau");
+  const lang = document.getElementById("language").value;
+  const t = teks[lang];
+  
+  if (gsmEl) gsmEl.placeholder = t.placeholders.gsm || "GSM";
+  if (pisauEl) pisauEl.placeholder = t.placeholders.pisau || "Pisau";
+
+  let gsmVal = "", pisauVal = "";
+  // Untuk Tab 1, GSM dan Pisau selalu readonly jika material dipilih
+  const isReadonly = b !== ""; 
+
+  if(b==="Bouyan"){gsmVal=0.22;pisauVal=0.109;}
+  else if(b==="BAT"){gsmVal=0.18;pisauVal=0.138;}
+  else if(b==="Highlander"){gsmVal=0.095;pisauVal=0.2;}
+  // Tidak ada case "Custom" di sini lagi
+
+  if (gsmEl && pisauEl) {
+    if (b) { // Jika ada material dipilih (Bouyan, BAT, Highlander)
+      gsmEl.classList.remove("hidden");
+      pisauEl.classList.remove("hidden");
+      gsmEl.value=gsmVal;
+      pisauEl.value=pisauVal;
+    } else { // "Pilih Bahan"
+      gsmEl.classList.add("hidden");
+      pisauEl.classList.add("hidden");
+      gsmEl.value="";
+      pisauEl.value="";
+    }
+    gsmEl.readOnly = isReadonly;
+    pisauEl.readOnly = isReadonly;
+  }
+}
+
+function hitungWaktuAngkat(){
+  const lang=document.getElementById("language").value;
+  const t=teks[lang];
+
+  const gsm = getValue("gsm", null);
+  const pis = getValue("pisau", null);
+  let speed = getValue("speed", 10.20);
+  const berat = getValue("berat", null);
+
+  if(gsm === null || pis === null || speed === null || berat === null || gsm <= 0 || pis <= 0 || speed <= 0 || berat <= 0){
+    alert(t.alert);
+    setText("hasilWaktuAngkat",t.hasilWaktuAngkat);
+    return;
+  }
+  const dur=berat/(gsm*pis*speed);
+  setText("hasilWaktuAngkat",t.hasilWaktuAngkat+dur.toFixed(2)+(lang==="zh"?" ç§’":lang==="en"?" seconds":" detik"));
+}
+
+function hitungAirRecycle(){
+  const lang=document.getElementById("language").value;
+  const t=teks[lang];
+  const jr = getValue("jumlahRecycle", null);
+  const mo = getValue("moisture", 0.93);
+  const ko = getValue("konsentrasi", 0.16);
+
+  if(jr === null || jr <= 0 || mo <= 0 || mo >= 1 || ko <= 0 || ko >= 1){
+    alert(t.alert);
+    setText("hasilAirRecycle",t.hasilAirRecycle);
+    return;
+  }
+  const air=(jr*mo)/ko-jr;
+  setText("hasilAirRecycle", t.hasilAirRecycle+air.toFixed(2));
+}
+
+function hitungFlowrateBaru(){
+  const lang=document.getElementById("language").value;
+  const t=teks[lang];
+  const fa = getValue("flowAwal", null);
+  const ka = getValue("kecepatanAwal", null);
+  const kb = getValue("kecepatanBaru", null);
+
+  if(fa === null || ka === null || kb === null || ka == 0 ){
+    alert(t.alert);
+    setText("hasilFlowrate",t.hasilFlowrate);
+    return;
+  }
+  const fr=fa/ka*kb;
+  setText("hasilFlowrate", t.hasilFlowrate+fr.toFixed(2));
+}
+
+// --- Fungsi untuk Tab 4: Flowrate Headbox ---
+function aturInputHeadbox() {
+    const bahanValue = document.getElementById("bahanHeadbox").value;
+    const gsmEl = document.getElementById("gsmFormula");
+    const kecepatanEl = document.getElementById("kecepatanBeltingFormula");
+    const lebarEl = document.getElementById("lebarKertasFormula");
+
+    const lang = document.getElementById("language").value;
+    const t = teks[lang];
+
+    // Setel placeholder terlebih dahulu
+    setPlaceholder("gsmFormula", t.placeholders.gsmFormula);
+    setPlaceholder("kecepatanBeltingFormula", t.placeholders.kecepatanBeltingFormula);
+    setPlaceholder("lebarKertasFormula", t.placeholders.lebarKertasFormula);
+    // Placeholder untuk pulpConcentrationFormula diatur di ubahBahasa()
+
+    let gsmVal = "", kecepatanVal = "", lebarVal = "";
+    let gsmRO = false, kecepatanRO = false, lebarRO = false;
+
+    if (bahanValue === "Bouyan") {
+        gsmVal = 0.22;
+        kecepatanVal = 10.20;
+        lebarVal = 1.28;
+        gsmRO = true; kecepatanRO = true; lebarRO = true;
+    } else if (bahanValue === "Custom") {
+        // Biarkan kosong untuk input manual, pastikan tidak readonly
+        gsmRO = false; kecepatanRO = false; lebarRO = false;
+    } else { // "Pilih Material"
+        // Kosongkan dan buat bisa diedit
+        gsmRO = false; kecepatanRO = false; lebarRO = false;
+    }
+
+    if (gsmEl) { gsmEl.value = gsmVal; gsmEl.readOnly = gsmRO; }
+    if (kecepatanEl) { kecepatanEl.value = kecepatanVal; kecepatanEl.readOnly = kecepatanRO; }
+    if (lebarEl) { lebarEl.value = lebarVal; lebarEl.readOnly = lebarRO; }
+}
+
+
+function hitungFormulaHeadbox(){ 
+    const lang = document.getElementById("language").value;
+    const t = teks[lang];
+
+    const gsm = getValue("gsmFormula", null);
+    const speed = getValue("kecepatanBeltingFormula", null);
+    const paperWidth = getValue("lebarKertasFormula", null);
+    const pulpConcentration = getValue("pulpConcentrationFormula", null);
+
+    const konstantaAir = 0.93;
+    const konstantaTetap = 1.04;
+
+    if (gsm === null || gsm <= 0 ||
+        speed === null || speed <= 0 ||
+        paperWidth === null || paperWidth <= 0 ||
+        pulpConcentration === null || pulpConcentration <= 0) {
+        alert(t.alert);
+        setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat);
+        return;
+    }
+    
+    const hasil = (gsm * konstantaAir * speed * paperWidth) / pulpConcentration / konstantaTetap;
+    setText("hasilFormulaZatPadat", t.hasilFormulaZatPadat + hasil.toFixed(2));
+}
+// --- Akhir Fungsi untuk Tab 4 ---
+
+function tampilkanNotifikasiProduksiSelesai() {
+    const lang = document.getElementById("language").value;
+    const t = teks[lang];
+    const popup = document.getElementById("notifikasiSelesaiPopup");
+
+    if(popup && t && t.notifikasi) {
+        setText("teksNotifikasiSelesai", t.notifikasi.pesan);
+        setText("btnTutupNotifikasi", t.notifikasi.tutupButton);
+        popup.classList.add("show");
+    }
+
+    notifikasiSudahDitampilkan = true;
+    if (intervalCekWaktuNotifikasi) {
+        clearInterval(intervalCekWaktuNotifikasi);
+        intervalCekWaktuNotifikasi = null;
+    }
+}
+
+function tutupNotifikasiSelesai() {
+    const popup = document.getElementById("notifikasiSelesaiPopup");
+    if (popup) popup.classList.remove("show");
+}
+
+function cekWaktuProduksiSelesaiSecaraBerkala() {
+    if (!targetWaktuSelesaiNotifikasi || notifikasiSudahDitampilkan) {
+        return;
+    }
+    const sekarang = new Date();
+    if (sekarang >= targetWaktuSelesaiNotifikasi) {
+        tampilkanNotifikasiProduksiSelesai();
+    }
+}
+
+window.onload = function() {
+    const tanggalMulaiEl = document.getElementById('tanggalMulai');
+    if(tanggalMulaiEl && !tanggalMulaiEl.value) { 
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedToday = `${year}-${month}-${day}`;
+        tanggalMulaiEl.value = formattedToday;
+    }
+    ubahBahasa(); 
+    tutupNotifikasiSelesai();
+};
+</script>
 </body>
 </html>
